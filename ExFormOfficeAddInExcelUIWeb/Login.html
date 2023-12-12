@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>Excel Add-In with Login</title>
+
+    <script src="Scripts/jquery-1.9.1.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="Scripts/FabricUI/MessageBanner.js" type="text/javascript"></script>
+    <script src="../Scripts/FabricUI/Panel.js" type="text/javascript"></script>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+
+    <!-- To enable offline debugging using a local reference to Office.js, use: -->
+    <!-- <script src="Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>  -->
+    <!-- <script src="Scripts/Office/1/office.js" type="text/javascript"></script>  -->
+
+    <link href="../App.css" rel="stylesheet" type="text/css" />
+    <script src="../App.js" type="text/javascript"></script>
+
+    <script src="Scripts/Login/Login.js" type="text/javascript"></script>
+
+    <!-- For the Office UI Fabric, go to https://aka.ms/office-ui-fabric to learn more. -->
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.min.css">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.components.min.css">
+
+    <!--Designer Codes Begin-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+    <link href="Content/Login.css" rel="stylesheet" />
+    <!--Designer Codes End-->
+    <!-- To enable the offline use of Office UI Fabric, use: -->
+    <!-- link rel="stylesheet" href="Content/fabric.min.css" -->
+    <!-- link rel="stylesheet" href="Content/fabric.components.min.css" -->
+</head>
+<body class="login-section">
+    <div id="padding content-main">
+        <div class="exform-main" id="divLogin">
+            <div class="ms-font-xxl ms-fontColor-neutralSecondary ms-fontWeight-semilight" style="padding-bottom:4px;text-align:center;">
+                <img src="/Images/logo.png" height="33" width="176" alt="ExForms">
+                <div>
+                    <div class="ms-TextField">
+                        <label class="ms-Label" style="float:left">E-mail Address:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtusername" value="" placeholder="User Name">
+                    </div>
+                    <div class="ms-TextField">
+                        <label class="ms-Label" style="float:left">Password:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="password" id="txtpassword" value="" placeholder="Password">
+                    </div>
+                    <div class="ms-TextField">
+                        <label class="ms-Label" style="float:left">Account:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" id="txtAccount" value="" placeholder="Account Name">
+                    </div>
+                    <div class="ms-TextField" style="float:right;margin-top:4px">
+                        <button class="ms-Button ms-Button--primary" id="Login-button" style="height:auto;">
+                            <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--plus"></i></span>
+                            <span class="ms-Button-label" id="button-text">Sign In</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" id="loging" style="display:none;height:auto">
+                            <span class="ms-Button-label">Please wait...</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- FabricUI component used for displaying notifications -->
+    <!--<div class="ms-MessageBanner" id="notification-popup">
+        <div class="ms-MessageBanner-content">
+            <div class="ms-MessageBanner-text">
+                <div class="ms-MessageBanner-clipper">
+                    <div class="ms-font-m-plus ms-fontWeight-semibold" id="notification-header"></div>
+                    <div class="ms-font-m ms-fontWeight-semilight" id="notification-body"></div>
+                </div>
+            </div>
+            <button class="ms-MessageBanner-expand" style="display:none"><i class="ms-Icon ms-Icon--chevronsDown"></i> </button>
+            <div class="ms-MessageBanner-action"></div>
+        </div>
+        <button class="ms-MessageBanner-close"> <i class="ms-Icon ms-Icon--x"></i> </button>
+    </div>-->
+    <div id="dialog-notification">
+
+    </div>
+</body>
+</html>

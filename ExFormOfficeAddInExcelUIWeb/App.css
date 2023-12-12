@@ -1,0 +1,39 @@
+﻿/* Common app styling */
+
+#notification-message {
+    background-color: white;
+    color: Black;
+    position: absolute;
+    width: 100%;
+    min-height: 80px;
+    right: 0;
+    z-index: 100;
+    bottom: 0;
+    display: none; /* Hidden until invoked */
+    border: 1px solid #808080;
+    background-color: #edf4fe;
+}
+
+    #notification-message #notification-message-header {
+        font-size: medium;
+        margin-bottom: 10px;
+        padding: 10px;
+        color:white;
+        background-color: black;
+    }
+
+#notification-message #notification-message-close {
+    background-image: url("/Images/Close.png");
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    cursor: pointer;
+}
+
+#notification-message-body
+{
+    padding:10px;
+}

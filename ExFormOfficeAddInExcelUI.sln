@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.960
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExFormOfficeAddInExcelUI", "ExFormOfficeAddInExcelUI\ExFormOfficeAddInExcelUI.csproj", "{47E5C987-5BB4-43E7-9283-60E4D2BF6D9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExFormOfficeAddInExcelUIWeb", "ExFormOfficeAddInExcelUIWeb\ExFormOfficeAddInExcelUIWeb.csproj", "{95B8732B-C0C0-4753-95B8-1C4BC7E339CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExFormOfficeAddInEntities", "ExFormOfficeAddInEntities\ExFormOfficeAddInEntities.csproj", "{012D414D-5904-4CD9-99DA-4137D16B7F2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExFormOfficeAddInDAL", "ExFormOfficeAddInDAL\ExFormOfficeAddInDAL.csproj", "{E73A6956-6A78-4820-8E33-A65F59A2D12E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExFormOfficeAddInBAL", "ExFormOfficeAddInBAL\ExFormOfficeAddInBAL.csproj", "{0C1370C9-BD45-40CF-978D-AA39A002F32E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47E5C987-5BB4-43E7-9283-60E4D2BF6D9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47E5C987-5BB4-43E7-9283-60E4D2BF6D9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47E5C987-5BB4-43E7-9283-60E4D2BF6D9C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{47E5C987-5BB4-43E7-9283-60E4D2BF6D9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47E5C987-5BB4-43E7-9283-60E4D2BF6D9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47E5C987-5BB4-43E7-9283-60E4D2BF6D9C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{95B8732B-C0C0-4753-95B8-1C4BC7E339CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95B8732B-C0C0-4753-95B8-1C4BC7E339CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95B8732B-C0C0-4753-95B8-1C4BC7E339CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95B8732B-C0C0-4753-95B8-1C4BC7E339CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{012D414D-5904-4CD9-99DA-4137D16B7F2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{012D414D-5904-4CD9-99DA-4137D16B7F2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{012D414D-5904-4CD9-99DA-4137D16B7F2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{012D414D-5904-4CD9-99DA-4137D16B7F2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E73A6956-6A78-4820-8E33-A65F59A2D12E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E73A6956-6A78-4820-8E33-A65F59A2D12E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E73A6956-6A78-4820-8E33-A65F59A2D12E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E73A6956-6A78-4820-8E33-A65F59A2D12E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C1370C9-BD45-40CF-978D-AA39A002F32E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C1370C9-BD45-40CF-978D-AA39A002F32E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C1370C9-BD45-40CF-978D-AA39A002F32E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C1370C9-BD45-40CF-978D-AA39A002F32E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7BE70B23-0126-4D5A-917B-A3928685B963}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,77 @@
+﻿html, body {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+p {
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+div p:last-child {
+    margin-bottom: 0px;
+}
+
+.ms-Label {
+    margin-bottom: 0px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+.ms-TextField-field {
+    border-radius: 0px;
+    border: solid 1px #94c7e8;
+    font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+}
+
+h1 {
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+}
+
+h2 {
+    font-size: 18px;
+}
+
+h3 {
+    font-size: 16px;
+}
+
+h4 {
+    font-size: 14px;
+}
+
+h5 {
+    font-size: 12px;
+}
+
+h6 {
+    font-size: 10px;
+}
+
+.exform-main {
+    padding: 15px;
+}
+
+.login-section {
+    background: #edf4fe;
+    padding: 10px;
+}
+
+    .login-section h2 {
+        color: #137abf;
+    }
+
+.brand-logo {
+    margin-bottom: 20px;
+}
+
+.sign-in-form {
+    margin-top: 25px;
+}
