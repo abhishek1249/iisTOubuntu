@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
+using System.Web.UI.WebControls;
 using System.Xml;
 using System.Xml.Linq;
 using AsposePdf = Aspose.Pdf;
@@ -1299,14 +1300,41 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
         }
 
         [Route("api/Template/AutoMapFields")]
-        [HttpPost()]
-        public DataTable AutoMapFields([FromBody] int templateId)
+        [HttpGet()]
+        public DataTable AutoMapFields(int templateId, int templateFileId = 0)
         {
             var templateFields = new DataTable();
             try
             {
-                Helper.RemoveAllMappedFields(templateId);
+                if(templateFileId <= 0)
+                {
+                    Helper.RemoveAllMappedFields(templateId);
+                }
+                
                 templateFields = Helper.GetTemplateFieldsByTemplateId(templateId);
+                return templateFields;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+        }
+
+        [Route("api/Template/SyncMappedFields")]
+        [HttpGet()]
+        public DataTable SyncMappedFields(int templateId)
+        {
+            var templateFields = new DataTable();
+            try
+            {    
+                templateFields = Helper.GetTemplateFieldsByTemplateId(templateId);
+
+                var rows = templateFields.Select("IsMapped= " + false);
+                foreach (var row in rows)
+                { row.Delete(); }
+                templateFields.AcceptChanges();
+
                 return templateFields;
             }
             catch (Exception ex)

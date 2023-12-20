@@ -11,6 +11,9 @@ var childTable;
 var isParentChildRelationshipSaved = false;
 var couterCheck = 0;
 var templateId = -1;
+var currentTemplateFileId = -1;
+var arrFileMap = [];
+var currentRemoveFileId = -1;
 var isSubFolderNameOption = false;
 var isFileNameOption = false;
 var docdata = [];
@@ -98,8 +101,8 @@ var isNamingOptionsModified = false;
             $("#btnFancyChartPanel").on("click", function () {
                 PanelOpen($(this).attr("InfoName"));
             });
-            $("#infoLearnMore").click(OpenInfoUrl);            
-            
+            $("#infoLearnMore").click(OpenInfoUrl);
+
             $("#setofFormsLearnMore").click(OpenSetofFormsUrl);
             $("#setofforms").click(SetOfForms);
             if (localStorage.getItem("CompanyName") === "") {
@@ -717,11 +720,9 @@ var isNamingOptionsModified = false;
                                 $(document).on('click', '.fileEdit', function () {
                                     EditFieldsMapping(this);
                                 });
-                                $(document).on('click', '.fileAutoMap', function () {
-                                    AutoMapFields(this);
-                                });
+
                                 isFileMappingEdited = false;
-                                $(this).dialog("close");
+                                $("#dialog-editFieldsMappingBack").dialog("close");
                                 $('#defaults').hide();
                                 $('#editFieldsMapping').hide();
                                 $('#editSet').show();
@@ -1043,14 +1044,23 @@ var isNamingOptionsModified = false;
                     if (!isFileExist) {
                         _files.push(input.files[x]);
                         table_body = '<tr>';
+
                         table_body += '<td>';
-                        table_body += "<a class='fileEdit' id='-1'><span style='color: red;cursor:pointer;'> Edit </span></a>";
+                        table_body += "<a class='fileAutoMap' id='-1'><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
                         table_body += '</td>';
+                        table_body += '<td>';
+                        table_body += "<a class='fileRemoveMap' id='-1'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+                        table_body += '</td>';
+
                         table_body += '<td>';
                         table_body += " " + input.files[x].name;
                         table_body += '</td>';
                         table_body += '<td>';
                         table_body += "  0%";
+                        table_body += '</td>';
+
+                        table_body += '<td>';
+                        table_body += "<a class='fileEdit' id='-1'><span style='color: red;cursor:pointer;'> Edit </span></a>";
                         table_body += '</td>';
                         table_body += '<td>';
                         table_body += "<a class='fileDel' id='-1'><span style='color: red;cursor:pointer;'> Delete </span></a>";
@@ -1333,7 +1343,7 @@ var isNamingOptionsModified = false;
                                         app.showNotification('Message', messages);
                                         if (sres.ZipPath !== "" && sres.ZipPath !== null) {
                                             Office.context.ui.openBrowserWindow(location.origin + sres.ZipPath);
-                                            
+
                                             setTimeout(function () {
                                                 $.ajax({
                                                     url: "/api/Template/DeleteZipFolder",
@@ -1684,7 +1694,19 @@ var isNamingOptionsModified = false;
         $("#dialog-deleteFile").dialog("open");
     }
 
+    $(document).on('click', '.fileRemoveMap', function () {
+        var fileObj = this;
+        if (fileObj !== undefined && fileObj !== null && $.trim(fileObj.innerText) === 'Remove Map') {
+            if (fileObj.id === "-1")
+                return;
+
+            currentRemoveFileId = parseInt(fileObj.id);
+        }
+
+        $("#dialog-removeFileMappings").dialog("open");
+    });
     function confirmRemoveAllMappings() {
+        currentRemoveFileId = -1;
         $("#dialog-removeAllMappings").dialog("open");
     }
 
@@ -1692,7 +1714,20 @@ var isNamingOptionsModified = false;
         $("#dialog-removeFileMappings").dialog("open");
     }
 
+    $(document).on('click', '.fileAutoMap', function () {
+        var fileObj = this;
+        if (fileObj !== undefined && fileObj !== null && $.trim(fileObj.innerText) === 'Auto Map') {
+            if (fileObj.id === "-1")
+                return;
+
+            currentTemplateFileId = parseInt(fileObj.id);
+        }
+
+        $("#dialog-autoMappings").dialog("open");
+    });
     function confirmAutoFieldsMappings() {
+        arrFileMap = [];
+        currentTemplateFileId = -1;
         $("#dialog-autoMappings").dialog("open");
     }
 
@@ -1779,45 +1814,37 @@ var isNamingOptionsModified = false;
         }
         return newArray;
     }
-    function AutoMapFields() {
-        console.log(templateId);
 
-        //if (!isExcelVersioMatching) {
-        //    app.showNotification('Message', 'The open excel file is not the valid mapping file.');
-        //    return;
-        //}
-        //if (obj !== undefined && obj !== null && $.trim(obj.innerText) === 'Edit') {
-        //    if (obj.id === "-1")
-        //        return;
-
-        //    var fileId = parseInt(obj.id);
-        //    editFileId = fileId;
+    function SyncMappedFields() {          
 
         if (templateId > 0) {
+
             $('#btnAutomapFields').hide();
             $('#btnAutomappingFields').show();
             $.ajax({
-                url: "/api/Template/AutoMapFields",
-                type: 'post',
-                data: JSON.stringify(templateId),
+                url: "/api/Template/SyncMappedFields",
+                type: 'get',
+                data: { templateId: templateId },
                 contentType: 'application/json;charset=utf-8'
             }).done(function (res) {
+
                 if (res) {
+
                     var previousParentId = '';
                     var dynamicFieldIds = [];
                     var dtParentFields = [];
                     var parentTableColumnNames = [];
-                    parentTableColumnNames.push("ID");
+                    parentTableColumnNames.push("ID");                    
 
+                    console.log(res);
                     $.each(res, function (index, obj) {
+
                         var templateFileMappingId = obj.TemplateFileMappingId;
                         var pdfFieldName = obj.PDFFieldName;
                         var isDynamic = obj.IsDynamic;
                         var fieldId = obj.FieldId;
                         var parentFieldId = obj.ParentFieldId;
                         var hasChildFields = obj.HasChildFields;
-
-                        console.log(obj);
 
                         if (isDynamic) {
                             previousParentId = fieldId;
@@ -1848,11 +1875,16 @@ var isNamingOptionsModified = false;
                             parentTableColumnNames.push(parentField1.ExcelFieldName);
                             dtParentFields.push(parentField1);
                         }
+
                     });
+                    console.log(parentTableColumnNames);
                     Excel.run(function (context) {
                         var columnCount = parentTableColumnNames.length;
                         var colname = GetColumnName(columnCount);
                         var range = "A1:" + colname + "1";
+
+                        //var sheet = context.workbook.worksheets.getActiveWorksheet();
+
                         var sheet = context.workbook.worksheets.add();
                         sheet.load("name");
                         var parentTable = sheet.tables.add(range, true /*hasHeaders*/);
@@ -1867,6 +1899,200 @@ var isNamingOptionsModified = false;
                             var newArray = res.filter(function (item) {
                                 return item.ParentFieldId === dynamicFieldIds[i];
                             });
+
+
+                            var start = columnCount + 2;
+                            var startColName = GetColumnName(start);
+                            columnCount = start + newArray.length;
+                            var endColName = GetColumnName(columnCount);
+                            range = startColName + "1:" + endColName + "1";
+                            var childTableColNames = [];
+                            childTableColNames.push("ID");
+
+                            $.each(newArray, function (j, arrobj) {
+                                var dynamicField = {
+                                    TemplateFileMappingId: arrobj.TemplateFileMappingId,
+                                    ExcelFieldName: arrobj.PDFFieldName,
+                                    SheetName: "",
+                                    ExcelTableName: i,
+                                    IsMapped: true,
+                                    ParentFieldId: arrobj.ParentFieldId
+                                };
+
+                                dtChildFields.push(dynamicField);
+                                childTableColNames.push(arrobj.PDFFieldName);
+                            });
+
+                            var childTable = sheet.tables.add(range, true /*hasHeaders*/);
+
+
+                            childTables.push(childTable);
+                            childTable.load("name");
+                            childTable.getHeaderRowRange().values = [childTableColNames];
+                            var childHeaderRange = childTable.getHeaderRowRange().load("values");
+                            childHeaders.push(childHeaderRange);
+                        }
+
+                        if (Office.context.requirements.isSetSupported("ExcelApi", "1.2")) {
+                            sheet.getUsedRange().format.autofitColumns();
+                            sheet.getUsedRange().format.autofitRows();
+                        }
+
+                        sheet.activate();
+
+                        return context.sync()
+                            .then(function () {
+                                $.each(dtParentFields, function (k, parentField) {
+                                    parentField.SheetName = sheet.name;
+                                    parentField.ExcelTableName = parentTable.name;
+                                });
+
+                                $.each(dtChildFields, function (l, childField) {
+                                    childField.SheetName = sheet.name;
+                                    /*$.each(childHeaders, function (m, childHeader) {
+                                        var headerValues = childHeader.values;
+                                    });*/
+                                    $.each(childTables, function (n, childTable) {
+                                        if (childField.ExcelTableName === n)
+                                            childField.ExcelTableName = childTable.name;
+                                    });
+                                });
+                                var fields = {
+                                    ParentFields: dtParentFields,
+                                    ChildFields: dtChildFields,
+                                    DynamicFieldIds: dynamicFieldIds,
+                                    TemplateId: templateId
+                                };                                
+
+                            });
+                    }).catch(errorHandlerFunction);
+                }
+                else if (res === null) {
+                    app.showNotification('Error', 'Something went wrong. Please try again.');
+                }
+            }).fail(function (status) {
+                app.showNotification('Error', 'Could not communicate with the server.');
+            }).always(function () {
+                setTimeout(function () {
+                    $('#btnAutomapFields').show();
+                    $('#btnAutomappingFields').hide();
+                }, 2500);
+            });
+        }
+    }
+
+    function AutoMapFields() {
+        //debugger;
+
+        var fileId = 0;
+        if (currentTemplateFileId != -1) {
+
+            if (arrFileMap.indexOf(currentTemplateFileId) < 0) {
+                arrFileMap.push(currentTemplateFileId);
+            }
+            fileId = currentTemplateFileId;
+        }        
+
+        if (templateId > 0) {
+
+            $('#btnAutomapFields').hide();
+            $('#btnAutomappingFields').show();
+            $.ajax({
+                url: "/api/Template/AutoMapFields",
+                type: 'get',
+                data: { templateId: templateId, templateFileId: fileId },
+                contentType: 'application/json;charset=utf-8'
+            }).done(function (res) {
+
+                if (res) {
+
+                    if (currentTemplateFileId != -1) {
+                        const isFileAlreadyMapped = res.some(function (x) { return x.TemplateFileId == currentTemplateFileId && x.IsMapped == true });
+                        if (isFileAlreadyMapped) {
+                            app.showNotification('Message', 'File is already mapped.');
+                            return false;
+                        }
+                    }
+
+                    currentTemplateFileId = -1;
+
+                    var previousParentId = '';
+                    var dynamicFieldIds = [];
+                    var dtParentFields = [];
+                    var parentTableColumnNames = [];
+                    parentTableColumnNames.push("ID");
+
+                    if (arrFileMap.length > 0) {
+                        console.log('one file map');
+                        res = res.filter(function (item) {
+                            return arrFileMap.indexOf(item.TemplateFileId) > -1;
+                        });
+                    }
+
+                    console.log(res);
+                    $.each(res, function (index, obj) {
+
+                        var templateFileMappingId = obj.TemplateFileMappingId;
+                        var pdfFieldName = obj.PDFFieldName;
+                        var isDynamic = obj.IsDynamic;
+                        var fieldId = obj.FieldId;
+                        var parentFieldId = obj.ParentFieldId;
+                        var hasChildFields = obj.HasChildFields;
+
+                        if (isDynamic) {
+                            previousParentId = fieldId;
+                            dynamicFieldIds.push(fieldId);
+                            return true;
+                        }
+                        else if ((previousParentId !== null || previousParentId !== '') && previousParentId === parentFieldId)
+                            return true;
+                        else if (parentFieldId === null || parentFieldId === '') {
+                            var parentField = {
+                                TemplateFileMappingId: templateFileMappingId,
+                                ExcelFieldName: null,
+                                SheetName: "",
+                                ExcelTableName: "",
+                                IsMapped: false
+                            };
+
+                            dtParentFields.push(parentField);
+                        }
+                        else if (!hasChildFields) {
+                            var parentField1 = {
+                                TemplateFileMappingId: templateFileMappingId,
+                                ExcelFieldName: pdfFieldName,
+                                SheetName: "",
+                                ExcelTableName: "",
+                                IsMapped: true
+                            };
+                            parentTableColumnNames.push(parentField1.ExcelFieldName);
+                            dtParentFields.push(parentField1);
+                        }
+
+                    });
+                    console.log(parentTableColumnNames);
+                    Excel.run(function (context) {
+                        var columnCount = parentTableColumnNames.length;
+                        var colname = GetColumnName(columnCount);
+                        var range = "A1:" + colname + "1";
+
+                        //var sheet = context.workbook.worksheets.getActiveWorksheet();
+
+                        var sheet = context.workbook.worksheets.add();
+                        sheet.load("name");
+                        var parentTable = sheet.tables.add(range, true /*hasHeaders*/);
+                        parentTable.load("name");
+                        parentTableColumnNames = addNumbersToDuplicates(parentTableColumnNames);
+                        parentTable.getHeaderRowRange().values = [parentTableColumnNames];
+                        var childTables = [];
+                        var dtChildFields = [];
+                        var childHeaders = [];
+
+                        for (var i = 0; i < dynamicFieldIds.length; i++) {
+                            var newArray = res.filter(function (item) {
+                                return item.ParentFieldId === dynamicFieldIds[i];
+                            });
+
 
                             var start = columnCount + 2;
                             var startColName = GetColumnName(start);
@@ -1930,6 +2156,7 @@ var isNamingOptionsModified = false;
                                     DynamicFieldIds: dynamicFieldIds,
                                     TemplateId: templateId
                                 };
+
                                 $.ajax({
                                     url: "/api/Template/SaveAutomapFields",
                                     type: 'post',
@@ -1950,6 +2177,8 @@ var isNamingOptionsModified = false;
                                         $('#btnAutomappingFields').hide();
                                     }, 250);
                                 });
+
+
                             });
                     }).catch(errorHandlerFunction);
                 }
@@ -1990,6 +2219,18 @@ var isNamingOptionsModified = false;
     }
 
     function RemoveFileMapping() {
+
+        console.log('in remove', currentRemoveFileId);
+
+        if (currentRemoveFileId != -1) {
+            editFileId = currentRemoveFileId;
+
+            const index = arrFileMap.indexOf(currentRemoveFileId);
+            arrFileMap.splice(index, 1);
+            currentRemoveFileId = -1;
+            currentTemplateFileId = -1;
+        }
+
         if (editFileId > 0) {
             $('#btnRemoveFileMapping').hide();
             $('#btnRemovingFileMapping').show();
@@ -2001,6 +2242,7 @@ var isNamingOptionsModified = false;
             }).done(function (res) {
                 if (res.IsAnyFieldMapped) {
                     isFileMappingEdited = true;
+                    SyncMappedFields();
                     app.showNotification('Message', 'All Mappings are removed for the file.');
                 } else if (!res.IsAnyFieldMapped) {
                     app.showNotification('Message', 'There is no field mapped for the file.');
@@ -2184,6 +2426,7 @@ var isNamingOptionsModified = false;
     }
 
     function RemoveTemplateSetMapping() {
+
         if (templateId > 0) {
             $('#btnRemoveMappings').hide();
             $('#btnRemovingMappings').show();
@@ -2821,9 +3064,7 @@ var isNamingOptionsModified = false;
                 $(document).on('click', '.fileEdit', function () {
                     EditFieldsMapping(this);
                 });
-                $(document).on('click', '.fileAutoMap', function () {
-                    AutoMapFields(this);
-                });
+
                 $('#selectedSet').hide();
                 $('#editSet').show();
                 $("#accordion").accordion({ active: 3 });
@@ -2948,11 +3189,11 @@ var isNamingOptionsModified = false;
         for (var i = 0; i < data.Files.length; i++) {
             table_body += '<tr>';
 
-            table_body += '<td>';            
-            table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Mapping </span></a>";
+            table_body += '<td>';
+            table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
             table_body += '</td>';
             table_body += '<td>';
-            table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Mapping </span></a>";
+            table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
             table_body += '</td>';
             table_body += '<td>';
             table_body += " " + data.Files[i].FileName;
