@@ -1,0 +1,16 @@
+SQL To MySQK Migration Logs-----
+
+1) usp_CreateTemplate ======>    Stored Procedure not found in the code any where
+2) usp_CreateTemplateSet =====> Need to migrate. It has user define type in it
+3) usp_MapParentTableFields =====> Need to migrate. It has user define type in it
+4) usp_UpdateTemplate ======> Need to migrate. It has user define type in it
+5) usp_UpdateTemplateExcelVersion =====> Need to migrate. Need to handle nullable paramater in it
+6) usp_UpdateTemplateSet ========> Need to migrate. It has user define type in it
+
+
+
+File Directoly in Archive Folder ===============>
+
+Need to make change in SendDataToTemplateSet Method 
+Change Needs to be done ====> templateZip.AddFile(filePath, clientDirectory); Rplace clientDirectory with blank ""
+on line No - 1793, 1931, 2067
