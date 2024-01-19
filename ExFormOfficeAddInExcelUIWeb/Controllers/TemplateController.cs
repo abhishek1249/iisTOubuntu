@@ -920,6 +920,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             var fileNamePart = string.Empty;
             var deletedTemplateFileIds = string.Empty;
             var updatedBy = 0;
+            bool isDynamicFileUploaded = false;
 
             try
             {
@@ -967,7 +968,11 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                             AsposePdf.Document pdfDocument = new AsposePdf.Document(httpPostedFile.InputStream);
 
                             if (pdfDocument.Form.Type == AsposePdf.Forms.FormType.Dynamic)
+                            {
                                 pdfFile.IsXFA = true;
+                                isDynamicFileUploaded = true;
+                                continue;
+                            }
 
                             pdfFile.Folder = httpPostedFile.FileName;
                             pdfFile.FileName = httpPostedFile.FileName.Substring(httpPostedFile.FileName.LastIndexOf("\\") + 1);
@@ -1073,6 +1078,10 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             catch (Exception ex)
             {
                 return ex.Message;
+            }
+            if(isDynamicFileUploaded)
+            {
+                return "success with warning";
             }
             return "success";
         }
@@ -1818,7 +1827,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                                                 if (!File.Exists(filePath))
                                                 {
                                                     File.Copy(pdfFilePath, filePath);
-                                                    templateZip.AddFile(filePath, clientDirectory);
+                                                    templateZip.AddFile(filePath, outputSubFolder);
                                                 }
                                             }
                                             catch (PathTooLongException)
@@ -1956,7 +1965,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                                         if (!File.Exists(filePath))
                                         {
                                             File.Copy(pdfFilePath, filePath);
-                                            templateZip.AddFile(filePath, clientDirectory);
+                                            templateZip.AddFile(filePath, outputSubFolder);
                                         }
                                     }
                                     catch (PathTooLongException)
@@ -2092,7 +2101,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                                     if (!File.Exists(filePath))
                                     {
                                         File.Copy(pdfFilePath, filePath);
-                                        templateZip.AddFile(filePath, clientDirectory);
+                                        templateZip.AddFile(filePath, outputSubFolder);
                                     }
                                 }
                                 catch (PathTooLongException)

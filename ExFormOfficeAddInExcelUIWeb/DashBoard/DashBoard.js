@@ -61,7 +61,7 @@ var isNamingOptionsModified = false;
 
 
             $("#btnSave").click(CreateTemplate);
-            $("#btnUpdateVersion").click(UpdateExcelVersion);
+            //$("#btnUpdateVersion").click(UpdateExcelVersion);
             $("#btnEditSet").click(EditSet);
             $("#btnTableRelationship").click(GetTableParentChildTables);
             $("#btnSaveExistingSet").click(SaveExistingSet);
@@ -1045,9 +1045,9 @@ var isNamingOptionsModified = false;
                         _files.push(input.files[x]);
                         table_body = '<tr>';
 
-                        table_body += '<td>';
-                        table_body += "<a class='fileAutoMap' id='-1'><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
-                        table_body += '</td>';
+                        //table_body += '<td>';
+                        //table_body += "<a class='fileAutoMap' id='-1'><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
+                        //table_body += '</td>';
                         table_body += '<td>';
                         table_body += "<a class='fileRemoveMap' id='-1'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
                         table_body += '</td>';
@@ -1714,17 +1714,17 @@ var isNamingOptionsModified = false;
         $("#dialog-removeFileMappings").dialog("open");
     }
 
-    $(document).on('click', '.fileAutoMap', function () {
-        var fileObj = this;
-        if (fileObj !== undefined && fileObj !== null && $.trim(fileObj.innerText) === 'Auto Map') {
-            if (fileObj.id === "-1")
-                return;
+    //$(document).on('click', '.fileAutoMap', function () {
+    //    var fileObj = this;
+    //    if (fileObj !== undefined && fileObj !== null && $.trim(fileObj.innerText) === 'Auto Map') {
+    //        if (fileObj.id === "-1")
+    //            return;
 
-            currentTemplateFileId = parseInt(fileObj.id);
-        }
+    //        currentTemplateFileId = parseInt(fileObj.id);
+    //    }
 
-        $("#dialog-autoMappings").dialog("open");
-    });
+    //    $("#dialog-autoMappings").dialog("open");
+    //});
     function confirmAutoFieldsMappings() {
         arrFileMap = [];
         currentTemplateFileId = -1;
@@ -1834,9 +1834,8 @@ var isNamingOptionsModified = false;
                     var dynamicFieldIds = [];
                     var dtParentFields = [];
                     var parentTableColumnNames = [];
-                    parentTableColumnNames.push("ID");                    
+                    parentTableColumnNames.push("ID");                   
 
-                    console.log(res);
                     $.each(res, function (index, obj) {
 
                         var templateFileMappingId = obj.TemplateFileMappingId;
@@ -2006,14 +2005,6 @@ var isNamingOptionsModified = false;
 
                 if (res) {
 
-                    if (currentTemplateFileId != -1) {
-                        const isFileAlreadyMapped = res.some(function (x) { return x.TemplateFileId == currentTemplateFileId && x.IsMapped == true });
-                        if (isFileAlreadyMapped) {
-                            app.showNotification('Message', 'File is already mapped.');
-                            return false;
-                        }
-                    }
-
                     currentTemplateFileId = -1;
 
                     var previousParentId = '';
@@ -2022,14 +2013,12 @@ var isNamingOptionsModified = false;
                     var parentTableColumnNames = [];
                     parentTableColumnNames.push("ID");
 
-                    if (arrFileMap.length > 0) {
-                        console.log('one file map');
+                    if (arrFileMap.length > 0) {                        
                         res = res.filter(function (item) {
                             return arrFileMap.indexOf(item.TemplateFileId) > -1;
                         });
                     }
-
-                    console.log(res);
+                 
                     $.each(res, function (index, obj) {
 
                         var templateFileMappingId = obj.TemplateFileMappingId;
@@ -2070,18 +2059,43 @@ var isNamingOptionsModified = false;
                         }
 
                     });
-                    console.log(parentTableColumnNames);
+                    
                     Excel.run(function (context) {
                         var columnCount = parentTableColumnNames.length;
                         var colname = GetColumnName(columnCount);
                         var range = "A1:" + colname + "1";
 
-                        //var sheet = context.workbook.worksheets.getActiveWorksheet();
-
                         var sheet = context.workbook.worksheets.add();
                         sheet.load("name");
                         var parentTable = sheet.tables.add(range, true /*hasHeaders*/);
                         parentTable.load("name");
+
+                        //Try start
+                        
+                        //var colname = GetColumnName(parentTableColumnNames.length);
+                        //var sheet = context.workbook.worksheets.getItem("sheet1");
+                        //var parentTableExisting = sheet.tables.getItem("Table2");
+
+                        //var headerRange = parentTableExisting.getHeaderRowRange().load("values");
+                        //var bodyRange = parentTableExisting.getDataBodyRange().load("values");
+                        ////var arrExistingColCount = headerRange.load("values");
+                                               
+                        //var columnCountStartTest = headerRange.values.length + 1;
+                        //var colnameStartTest = GetColumnName(columnCountStartTest);
+
+                        //var columnCountEndTest = columnCountStartTest + parentTableColumnNames.length;
+                        //var colnameEndTest = GetColumnName(columnCountEndTest);
+
+                        //var range = colnameStartTest + "1:" + colnameEndTest + "1";
+
+                        //var parentTable = sheet.tables.add(range, true /*hasHeaders*/);
+                        //parentTable.load("name");
+                      
+                        //console.log(range);
+                        //var columnCount = columnCountEndTest;
+                        //console.log(columnCount);
+                        //Try end
+                    
                         parentTableColumnNames = addNumbersToDuplicates(parentTableColumnNames);
                         parentTable.getHeaderRowRange().values = [parentTableColumnNames];
                         var childTables = [];
@@ -2199,13 +2213,13 @@ var isNamingOptionsModified = false;
     function errorHandlerFunction(error) {
         $('#btnAutomapFields').prop('disabled', false);
         $('#btnSave').prop('disabled', false);
-        $('#btnUpdateVersion').prop('disabled', false);
+        //$('#btnUpdateVersion').prop('disabled', false);
         $("#btnSendData").show();
         $("#btnSendingData").hide();
         $('#btnSave').show();
         $('#btnSaving').hide();
-        $('#btnUpdateVersion').show();
-        $('#btnUpdatingVersion').hide();
+        //$('#btnUpdateVersion').show();
+        //$('#btnUpdatingVersion').hide();
         $('#btnAutomapFields').show();
         $('#btnAutomappingFields').hide();
         app.showNotification('Error', error.message);
@@ -2219,8 +2233,6 @@ var isNamingOptionsModified = false;
     }
 
     function RemoveFileMapping() {
-
-        console.log('in remove', currentRemoveFileId);
 
         if (currentRemoveFileId != -1) {
             editFileId = currentRemoveFileId;
@@ -2242,7 +2254,7 @@ var isNamingOptionsModified = false;
             }).done(function (res) {
                 if (res.IsAnyFieldMapped) {
                     isFileMappingEdited = true;
-                    SyncMappedFields();
+                    //SyncMappedFields();
                     app.showNotification('Message', 'All Mappings are removed for the file.');
                 } else if (!res.IsAnyFieldMapped) {
                     app.showNotification('Message', 'There is no field mapped for the file.');
@@ -3028,14 +3040,14 @@ var isNamingOptionsModified = false;
                         $('#btnSaveExistingSet').prop('disabled', false);
                         $('#btnAutomapFields').prop('disabled', false);
                         $('#btnRemoveMappings').prop('disabled', false);
-                        $('#btnUpdateVersion').prop('disabled', false);
+                        //$('#btnUpdateVersion').prop('disabled', false);
                         $('#txtExistingSetName').prop('disabled', false);
                         $('#txtSetDescription').prop('disabled', false);
                     } else {
                         $('#btnSaveExistingSet').prop('disabled', true);
                         $('#btnAutomapFields').prop('disabled', true);
                         $('#btnRemoveMappings').prop('disabled', true);
-                        $('#btnUpdateVersion').prop('disabled', true);
+                        //$('#btnUpdateVersion').prop('disabled', true);
                         $('#txtExistingSetName').prop('disabled', true);
                         $('#txtSetDescription').prop('disabled', true);
                     }
@@ -3044,7 +3056,7 @@ var isNamingOptionsModified = false;
                     $('#btnSaveExistingSet').prop('disabled', false);
                     $('#btnAutomapFields').prop('disabled', false);
                     $('#btnRemoveMappings').prop('disabled', false);
-                    $('#btnUpdateVersion').prop('disabled', false);
+                    //$('#btnUpdateVersion').prop('disabled', false);
                     $('#txtExistingSetName').prop('disabled', false);
                     $('#txtSetDescription').prop('disabled', false);
                 }
@@ -3082,6 +3094,7 @@ var isNamingOptionsModified = false;
     }
 
     function SaveExistingSet() {
+        console.log('Save');
         var delFiles = deletedFiles.join(',');
         var templateName = $.trim($('#txtExistingSetName').val());
         var description = $.trim($('#txtSetDescription').val());
@@ -3128,12 +3141,15 @@ var isNamingOptionsModified = false;
                 processData: false,
                 data: formData
             }).done(function (res) {
-                if (res === "success") {
+                console.log(res);
+                if (res === "success" || res === "success with warning") {
                     localStorage.setItem("isTemplateSetEdited", true);
                     deletedFiles = [];
                     $("#newFiles").val('');
-                    EditSet();
-                } else {
+                    EditSet(); 
+                    if (res === "success with warning") { app.showNotification('Error', 'Dynamic templates are not allowed'); }
+                }
+                else {
                     app.showNotification('Error', res);
                 }
             }).fail(function (status) {
@@ -3147,6 +3163,8 @@ var isNamingOptionsModified = false;
         }
         else
             app.showNotification('Error', "Fields cannot be empty.");
+
+        UpdateExcelVersion();
     }
 
     function DeleteTemplateFile() {
@@ -3189,9 +3207,9 @@ var isNamingOptionsModified = false;
         for (var i = 0; i < data.Files.length; i++) {
             table_body += '<tr>';
 
-            table_body += '<td>';
-            table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
-            table_body += '</td>';
+            //table_body += '<td>';
+            //table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
+            //table_body += '</td>';
             table_body += '<td>';
             table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
             table_body += '</td>';
@@ -3482,10 +3500,10 @@ var isNamingOptionsModified = false;
             }).fail(function (status) {
                 app.showNotification('Error', 'Could not communicate with the server.');
             }).always(function () {
-                setTimeout(function () {
-                    $('#btnUpdateVersion').show();
-                    $('#btnUpdatingVersion').hide();
-                }, 250);
+                //setTimeout(function () {
+                //    $('#btnUpdateVersion').show();
+                //    $('#btnUpdatingVersion').hide();
+                //}, 250);
             });
         }
     }
@@ -3542,8 +3560,9 @@ var isNamingOptionsModified = false;
     }
 
     function UpdateExcelVersion() {
-        $('#btnUpdateVersion').hide();
-        $('#btnUpdatingVersion').show();
+        console.log('Update');
+        //$('#btnUpdateVersion').hide();
+        //$('#btnUpdatingVersion').show();
         var userId = parseInt(localStorage.getItem("UserID"));
         var templateId = parseInt(localStorage.getItem("FolderId").replace("T", ""));
 
