@@ -1269,20 +1269,20 @@ namespace ExFormOfficeAddInBAL
         }
         public static void AddParentChildTableMapping(int templateFileId, string parentTableName, string parentTableColumn, string childTableName, string childTableColumn)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
 
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_AddParentChildTableMapping", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_AddParentChildTableMapping", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileId", templateFileId);
-                        sqlCmd.Parameters.AddWithValue("@ParentTableName", parentTableName);
-                        sqlCmd.Parameters.AddWithValue("@ParentTableColumn", parentTableColumn);
-                        sqlCmd.Parameters.AddWithValue("@ChildTableName", childTableName);
-                        sqlCmd.Parameters.AddWithValue("@ChildTableColumn", childTableColumn);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileId", templateFileId);
+                        sqlCmd.Parameters.AddWithValue("p_ParentTableName", parentTableName);
+                        sqlCmd.Parameters.AddWithValue("p_ParentTableColumn", parentTableColumn);
+                        sqlCmd.Parameters.AddWithValue("p_ChildTableName", childTableName);
+                        sqlCmd.Parameters.AddWithValue("p_ChildTableColumn", childTableColumn);
 
                         sqlCmd.ExecuteNonQuery();
                     }
@@ -1290,23 +1290,23 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static void UpdateFileNamingOption(NamingOption fileNamingOption)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
 
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_UpdateFileNamingOption", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_UpdateFileNamingOption", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateId", fileNamingOption.TemplateId);
-                        sqlCmd.Parameters.AddWithValue("@Fields", fileNamingOption.Fields);
-                        sqlCmd.Parameters.AddWithValue("@UpdatedBy", fileNamingOption.UpdatedBy);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateId", fileNamingOption.TemplateId);
+                        sqlCmd.Parameters.AddWithValue("p_Fields", fileNamingOption.Fields);
+                        sqlCmd.Parameters.AddWithValue("p_UpdatedBy", fileNamingOption.UpdatedBy);
 
                         sqlCmd.ExecuteNonQuery();
                     }
@@ -1314,23 +1314,23 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static void UpdateFolderNamingOption(NamingOption folderNamingOption)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
 
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_UpdateFolderNamingOption", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_UpdateFolderNamingOption", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateId", folderNamingOption.TemplateId);
-                        sqlCmd.Parameters.AddWithValue("@Fields", folderNamingOption.Fields);
-                        sqlCmd.Parameters.AddWithValue("@UpdatedBy", folderNamingOption.UpdatedBy);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateId", folderNamingOption.TemplateId);
+                        sqlCmd.Parameters.AddWithValue("p_Fields", folderNamingOption.Fields);
+                        sqlCmd.Parameters.AddWithValue("p_UpdatedBy", folderNamingOption.UpdatedBy);
 
                         sqlCmd.ExecuteNonQuery();
                     }
@@ -1338,26 +1338,26 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static DataTable GetExistingParentChildMapping(int templateFileId, string parentTable, string childTable)
         {
             var dt = new DataTable();
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
 
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_GetExistingParentChildMapping", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_GetExistingParentChildMapping", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileId", templateFileId);
-                        sqlCmd.Parameters.AddWithValue("@ParentTable", parentTable);
-                        sqlCmd.Parameters.AddWithValue("@ChildTable", childTable);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileId", templateFileId);
+                        sqlCmd.Parameters.AddWithValue("p_ParentTable", parentTable);
+                        sqlCmd.Parameters.AddWithValue("p_ChildTable", childTable);
 
-                        using (var da = new SqlDataAdapter())
+                        using (var da = new MySqlDataAdapter())
                         {
                             da.SelectCommand = sqlCmd;
                             da.Fill(dt);
@@ -1368,25 +1368,25 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
 
         public static DataTable GetParentTableFields(int templateId)
         {
             var dt = new DataTable();
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
 
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_GetParentTableFields", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_GetParentTableFields", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateId", templateId);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateId", templateId);
 
-                        using (var da = new SqlDataAdapter())
+                        using (var da = new MySqlDataAdapter())
                         {
                             da.SelectCommand = sqlCmd;
                             da.Fill(dt);
@@ -1397,23 +1397,23 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static void UpdateExcelColumnMapping(int templateId, string oldValue, string newValue)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
 
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_UpdateExcelColumnMapping", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_UpdateExcelColumnMapping", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateId", templateId);
-                        sqlCmd.Parameters.AddWithValue("@OldValue", oldValue);
-                        sqlCmd.Parameters.AddWithValue("@NewValue", newValue);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateId", templateId);
+                        sqlCmd.Parameters.AddWithValue("p_OldValue", oldValue);
+                        sqlCmd.Parameters.AddWithValue("p_NewValue", newValue);
 
                         sqlCmd.ExecuteNonQuery();
                     }
@@ -1421,24 +1421,24 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static byte[] GetTemplateExcelFileZip(int templateId)
         {
             var dt = new DataTable();
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
 
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_GetTemplateExcelFileZip", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_GetTemplateExcelFileZip", conn))
                     {
-                        sqlCmd.Parameters.AddWithValue("@TemplateId", templateId);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateId", templateId);
                         sqlCmd.CommandType = CommandType.StoredProcedure;
 
-                        using (var da = new SqlDataAdapter())
+                        using (var da = new MySqlDataAdapter())
                         {
                             da.SelectCommand = sqlCmd;
                             da.Fill(dt);
@@ -1452,7 +1452,7 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
             return null;
         }
@@ -1460,18 +1460,18 @@ namespace ExFormOfficeAddInBAL
         {
             var dt = new DataTable();
             ExcelFileInfo excelFile = new ExcelFileInfo();
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
 
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_GetTemplateExcelBytes", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_GetTemplateExcelBytes", conn))
                     {
-                        sqlCmd.Parameters.AddWithValue("@TemplateId", templateId);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateId", templateId);
                         sqlCmd.CommandType = CommandType.StoredProcedure;
 
-                        using (var da = new SqlDataAdapter())
+                        using (var da = new MySqlDataAdapter())
                         {
                             da.SelectCommand = sqlCmd;
                             da.Fill(dt);
@@ -1488,7 +1488,7 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
             return excelFile;
         }
@@ -1496,18 +1496,18 @@ namespace ExFormOfficeAddInBAL
         {
             var dt = new DataTable();
             var fieldId = string.Empty;
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_GetDynamicField", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_GetDynamicField", conn))
                     {
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileId", templateFileId);
-                        sqlCmd.Parameters.AddWithValue("@ExcelTableName", excelTableName);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileId", templateFileId);
+                        sqlCmd.Parameters.AddWithValue("p_ExcelTableName", excelTableName);
                         sqlCmd.CommandType = CommandType.StoredProcedure;
 
-                        using (var da = new SqlDataAdapter())
+                        using (var da = new MySqlDataAdapter())
                         {
                             da.SelectCommand = sqlCmd;
                             da.Fill(dt);
@@ -1519,24 +1519,24 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
             return dt;
         }
         public static DataTable GetDynamicChildFieldsByFieldId(string fieldId)
         {
             var dt = new DataTable();
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_GetDynamicChildFieldsByFieldId", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_GetDynamicChildFieldsByFieldId", conn))
                     {
-                        sqlCmd.Parameters.AddWithValue("@FieldId", fieldId);
+                        sqlCmd.Parameters.AddWithValue("p_FieldId", fieldId);
                         sqlCmd.CommandType = CommandType.StoredProcedure;
 
-                        using (var da = new SqlDataAdapter())
+                        using (var da = new MySqlDataAdapter())
                         {
                             da.SelectCommand = sqlCmd;
                             da.Fill(dt);
@@ -1546,24 +1546,24 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
             return dt;
         }
 
         public static void RemoveMappedField(int templateFileMappingId, bool isStaticField, string parentFieldName)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_RemoveMappedField", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_RemoveMappedField", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileMappingId", templateFileMappingId);
-                        sqlCmd.Parameters.AddWithValue("@IsStaticField", isStaticField);
-                        sqlCmd.Parameters.AddWithValue("@ParentFieldName", parentFieldName);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileMappingId", templateFileMappingId);
+                        sqlCmd.Parameters.AddWithValue("p_IsStaticField", isStaticField);
+                        sqlCmd.Parameters.AddWithValue("p_ParentFieldName", parentFieldName);
 
                         sqlCmd.ExecuteNonQuery();
                     }
@@ -1571,21 +1571,21 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static void RemoveDynamicFieldMapping(int templateFileMappingId, bool isDynamicField)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_RemoveDynamicFieldMapping", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_RemoveDynamicFieldMapping", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileMappingId", templateFileMappingId);
-                        sqlCmd.Parameters.AddWithValue("@IsDynamicField", isDynamicField);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileMappingId", templateFileMappingId);
+                        sqlCmd.Parameters.AddWithValue("p_IsDynamicField", isDynamicField);
 
                         sqlCmd.ExecuteNonQuery();
                     }
@@ -1593,47 +1593,47 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static void AddAcroMappedField(MapFieldParam mapFieldParam)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_AddAcroMappedFieldNew", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_AddAcroMappedFieldNew", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileMappingId", mapFieldParam.TemplateFileMappingId);
-                        sqlCmd.Parameters.AddWithValue("@SheetName", mapFieldParam.SheetName);
-                        sqlCmd.Parameters.AddWithValue("@ExcelTableName", mapFieldParam.TableName);
-                        sqlCmd.Parameters.AddWithValue("@ExcelColumnName", mapFieldParam.ColumnName);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileMappingId", mapFieldParam.TemplateFileMappingId);
+                        sqlCmd.Parameters.AddWithValue("p_SheetName", mapFieldParam.SheetName);
+                        sqlCmd.Parameters.AddWithValue("p_ExcelTableName", mapFieldParam.TableName);
+                        sqlCmd.Parameters.AddWithValue("p_ExcelColumnName", mapFieldParam.ColumnName);
                         sqlCmd.ExecuteNonQuery();
                     }
                 }
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static void AddXFAMappedField(MapFieldParam mapFieldParam)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_AddMappedFieldNew", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_AddMappedFieldNew", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileMappingId", mapFieldParam.TemplateFileMappingId);
-                        sqlCmd.Parameters.AddWithValue("@SheetName", mapFieldParam.SheetName);
-                        sqlCmd.Parameters.AddWithValue("@ExcelTableName", mapFieldParam.TableName);
-                        sqlCmd.Parameters.AddWithValue("@ExcelColumnName", mapFieldParam.ColumnName);
-                        sqlCmd.Parameters.AddWithValue("@IsDynamicElement", mapFieldParam.IsDynamicElement);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileMappingId", mapFieldParam.TemplateFileMappingId);
+                        sqlCmd.Parameters.AddWithValue("p_SheetName", mapFieldParam.SheetName);
+                        sqlCmd.Parameters.AddWithValue("p_ExcelTableName", mapFieldParam.TableName);
+                        sqlCmd.Parameters.AddWithValue("p_ExcelColumnName", mapFieldParam.ColumnName);
+                        sqlCmd.Parameters.AddWithValue("p_IsDynamicElement", mapFieldParam.IsDynamicElement);
 
                         sqlCmd.ExecuteNonQuery();
                     }
@@ -1641,24 +1641,24 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
 
         public static DataTable GetTemplateNamesPart(int templateId)
         {
             var dt = new DataTable();
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlComm = new SqlCommand("usp_GetTemplateNamesPart", conn))
+                    using (var sqlComm = new MySqlCommand("usp_GetTemplateNamesPart", conn))
                     {
-                        sqlComm.Parameters.AddWithValue("@TemplateId", templateId);
+                        sqlComm.Parameters.AddWithValue("p_TemplateId", templateId);
                         sqlComm.CommandType = CommandType.StoredProcedure;
 
-                        using (var da = new SqlDataAdapter())
+                        using (var da = new MySqlDataAdapter())
                         {
                             da.SelectCommand = sqlComm;
                             da.Fill(dt);
@@ -1668,7 +1668,7 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
             return dt;
 
