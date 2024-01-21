@@ -1,10 +1,12 @@
 ﻿using ExFormOfficeAddInDAL;
 using ExFormOfficeAddInEntities;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text.Json.Serialization;
 
 namespace ExFormOfficeAddInBAL
 {
@@ -261,44 +263,50 @@ namespace ExFormOfficeAddInBAL
 
         public static int CreateTemplate(PdfTemplate pdfTemplate)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             var templateId = -1;
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_CreateTemplateSet", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_CreateTemplateSet", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@CompanyId", pdfTemplate.CompanyId);
-                        sqlCmd.Parameters.AddWithValue("@TemplateName", pdfTemplate.TemplateName);
-                        sqlCmd.Parameters.AddWithValue("@Description", pdfTemplate.Description);
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileZip", pdfTemplate.TemplateFileZip);
-                        sqlCmd.Parameters.AddWithValue("@IsActive", pdfTemplate.IsActive);
-                        sqlCmd.Parameters.AddWithValue("@CreatedOn", pdfTemplate.CreatedOn);
-                        sqlCmd.Parameters.AddWithValue("@CreatedBy", pdfTemplate.CreatedBy);
-                        sqlCmd.Parameters.AddWithValue("@ExcelZip", pdfTemplate.ExcelZip);
-                        sqlCmd.Parameters.AddWithValue("@TemplateFile", pdfTemplate.TemplateFile);
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileFieldMapping", pdfTemplate.TemplateFileFieldMapping);
-                        sqlCmd.Parameters.AddWithValue("@TemplateFolderId", pdfTemplate.TemplateFolderId);
-                        sqlCmd.Parameters.AddWithValue("@FolderName", pdfTemplate.FolderName);
-                        sqlCmd.Parameters.AddWithValue("@SubFolderName", pdfTemplate.SubFolderName);
-                        sqlCmd.Parameters.AddWithValue("@FileNamePart", pdfTemplate.FileNamePart);
-                        sqlCmd.Parameters.AddWithValue("@ExcelVersion", pdfTemplate.ExcelVersion);
-                        sqlCmd.Parameters.AddWithValue("@IsDemoTemplate", pdfTemplate.IsDemoTemplate);
-                        sqlCmd.Parameters.AddWithValue("@ExcelBytes", pdfTemplate.ExcelBytes);
-                        sqlCmd.Parameters.AddWithValue("@FileExtension", pdfTemplate.FileExtension);
+                        sqlCmd.Parameters.AddWithValue("p_CompanyId", pdfTemplate.CompanyId);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateName", pdfTemplate.TemplateName);
+                        sqlCmd.Parameters.AddWithValue("p_Description", pdfTemplate.Description);
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileZip", pdfTemplate.TemplateFileZip);
+                        sqlCmd.Parameters.AddWithValue("p_IsActive", pdfTemplate.IsActive);
+                        sqlCmd.Parameters.AddWithValue("p_CreatedOn", pdfTemplate.CreatedOn);
+                        sqlCmd.Parameters.AddWithValue("p_CreatedBy", pdfTemplate.CreatedBy);
+                        sqlCmd.Parameters.AddWithValue("p_ExcelZip", pdfTemplate.ExcelZip);
+                       
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFolderId", pdfTemplate.TemplateFolderId);
+                        sqlCmd.Parameters.AddWithValue("p_FolderName", pdfTemplate.FolderName);
+                        sqlCmd.Parameters.AddWithValue("p_SubFolderName", pdfTemplate.SubFolderName);
+                        sqlCmd.Parameters.AddWithValue("p_FileNamePart", pdfTemplate.FileNamePart);
+                        sqlCmd.Parameters.AddWithValue("p_ExcelVersion", pdfTemplate.ExcelVersion);
+                        sqlCmd.Parameters.AddWithValue("p_IsDemoTemplate", pdfTemplate.IsDemoTemplate);
+                        sqlCmd.Parameters.AddWithValue("p_ExcelBytes", pdfTemplate.ExcelBytes);
+                        sqlCmd.Parameters.AddWithValue("p_FileExtension", pdfTemplate.FileExtension);
 
-                        sqlCmd.Parameters.Add("@TemplateId", SqlDbType.Int);
-                        sqlCmd.Parameters["@TemplateId"].Direction = ParameterDirection.Output;
+                       
+                        sqlCmd.Parameters.Add("p_TemplateFile", MySqlDbType.JSON);
+                        sqlCmd.Parameters["p_TemplateFile"].Value = JsonConvert.SerializeObject(pdfTemplate.TemplateFile);
+
+                        sqlCmd.Parameters.Add("p_TemplateFileFieldMapping", MySqlDbType.JSON);
+                        sqlCmd.Parameters["p_TemplateFileFieldMapping"].Value = JsonConvert.SerializeObject(pdfTemplate.TemplateFileFieldMapping);
+
+                        sqlCmd.Parameters.Add("p_TemplateId", MySqlDbType.Int32);
+                        sqlCmd.Parameters["p_TemplateId"].Direction = ParameterDirection.Output;
                         sqlCmd.ExecuteNonQuery();
-                        templateId = Convert.ToInt32(sqlCmd.Parameters["@TemplateId"].Value);
+                        templateId = Convert.ToInt32(sqlCmd.Parameters["p_TemplateId"].Value);
                     }
                 }
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
             return templateId;
         }
@@ -327,23 +335,31 @@ namespace ExFormOfficeAddInBAL
         }
         public static void UpdateTemplate(EditPdfTemplate editPdfTemplate)
         {
-            CommonSql CommonSql = new CommonSql();
+            MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
-                using (var conn = CommonSql.GetConnection())
+                using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlCmd = new SqlCommand("usp_UpdateTemplateSet", conn))
+                    using (var sqlCmd = new MySqlCommand("usp_UpdateTemplateSet", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@DeletedTemplateFileIds", editPdfTemplate.DeletedTemplateFileIds);
+                        sqlCmd.Parameters.AddWithValue("p_DeletedTemplateFileIds", editPdfTemplate.DeletedTemplateFileIds);
                         if (editPdfTemplate.UpdatedBy.HasValue)
-                            sqlCmd.Parameters.AddWithValue("@UpdatedBy", editPdfTemplate.UpdatedBy);
+                            sqlCmd.Parameters.AddWithValue("p_UpdatedBy", editPdfTemplate.UpdatedBy);
                         else
-                            sqlCmd.Parameters.AddWithValue("@UpdatedBy", DBNull.Value);
-                        sqlCmd.Parameters.AddWithValue("@Template", editPdfTemplate.Template);
-                        sqlCmd.Parameters.AddWithValue("@TemplateFile", editPdfTemplate.TemplateFile);
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileFieldMapping", editPdfTemplate.TemplateFileFieldMapping);
-                        sqlCmd.Parameters.AddWithValue("@TemplateFileZip", editPdfTemplate.TemplateFileZip);
+                            sqlCmd.Parameters.AddWithValue("p_UpdatedBy", DBNull.Value);
+
+                        sqlCmd.Parameters.Add("p_Template",MySqlDbType.JSON);
+                        sqlCmd.Parameters["p_Template"].Value = JsonConvert.SerializeObject(editPdfTemplate.Template);
+
+                        sqlCmd.Parameters.Add("p_TemplateFile", MySqlDbType.JSON);
+                        sqlCmd.Parameters["p_TemplateFile"].Value = JsonConvert.SerializeObject(editPdfTemplate.TemplateFile);
+
+                        sqlCmd.Parameters.Add("p_TemplateFileFieldMapping", MySqlDbType.JSON);
+                        sqlCmd.Parameters["p_TemplateFileFieldMapping"].Value = JsonConvert.SerializeObject(editPdfTemplate.TemplateFileFieldMapping);
+
+                        
+                        sqlCmd.Parameters.AddWithValue("p_TemplateFileZip", editPdfTemplate.TemplateFileZip);
 
                         sqlCmd.ExecuteNonQuery();
                     }
@@ -351,7 +367,7 @@ namespace ExFormOfficeAddInBAL
             }
             finally
             {
-                CommonSql.CloseConnection();
+                mySqlConnector.CloseConnection();
             }
         }
         public static DataTable GetTemplateByTemplateId(int templateId)
@@ -1056,8 +1072,8 @@ namespace ExFormOfficeAddInBAL
                     using (var sqlCmd = new MySqlCommand("usp_MapParentTableFields", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@ParentField", parentField);
-
+                        sqlCmd.Parameters.Add("p_ParentField", MySqlDbType.JSON);
+                        sqlCmd.Parameters["p_ParentField"].Value = JsonConvert.SerializeObject(parentField);
                         sqlCmd.ExecuteNonQuery();
                     }
                 }
@@ -1110,7 +1126,15 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.Parameters.AddWithValue("p_UpdatedBy", updatedBy);
                         sqlCmd.Parameters.AddWithValue("p_ExcelVersion", version);
                         sqlCmd.Parameters.AddWithValue("p_ExcelZip", excelZip);
-                        sqlCmd.Parameters.AddWithValue("p_ExcelBytes", excelBytes);
+                        if(excelBytes != null)
+                        {
+                            sqlCmd.Parameters.AddWithValue("p_ExcelBytes", excelBytes);
+                        }
+                        else
+                        {
+                            sqlCmd.Parameters.AddWithValue("p_ExcelBytes", DBNull.Value);
+                        }
+                        
                         sqlCmd.Parameters.AddWithValue("p_FileExtension", FileExtension);
 
                         sqlCmd.ExecuteNonQuery();
