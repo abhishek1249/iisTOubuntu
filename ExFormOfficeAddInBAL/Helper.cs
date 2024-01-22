@@ -11,51 +11,7 @@ using System.Text.Json.Serialization;
 namespace ExFormOfficeAddInBAL
 {
     public class Helper
-    {
-        //public static User LogIn(string userName, string password, string account)
-        //{
-        //    var dt = new DataTable("User");
-        //    User user = null;
-        //    //CommonSql CommonSql = new CommonSql();
-        //    MySqlConnector mySqlConnector = new MySqlConnector();
-        //    try
-        //    {
-        //        using (var conn = CommonSql.GetConnection())
-        //        {
-        //            using (var sqlComm = new SqlCommand("usp_Login", conn))
-        //            {
-        //                sqlComm.Parameters.AddWithValue("@UserName", userName);
-        //                sqlComm.Parameters.AddWithValue("@Password", password);
-        //                sqlComm.Parameters.AddWithValue("@AccountName", account);
-        //                sqlComm.CommandType = CommandType.StoredProcedure;
-
-        //                using (var da = new SqlDataAdapter())
-        //                {
-        //                    da.SelectCommand = sqlComm;
-        //                    da.Fill(dt);
-        //                }
-        //            }
-        //        }
-        //        if (dt.Rows.Count == 1)
-        //        {
-        //            user = new User();
-        //            user.UserId = Convert.ToInt32(dt.Rows[0]["UserId"]);
-        //            user.FullName = Convert.ToString(dt.Rows[0]["FullName"]);
-        //            user.UserName = Convert.ToString(dt.Rows[0]["UserName"]);
-        //            user.UserType = Convert.ToChar(dt.Rows[0]["UserType"]);
-        //            user.CompanyId = Convert.ToInt32(dt.Rows[0]["CompanyId"]);
-        //            user.CompanyName = Convert.ToString(dt.Rows[0]["CompanyName"]);
-        //            user.Email = Convert.ToString(dt.Rows[0]["Email"]);
-        //            user.IsActive = Convert.ToBoolean(dt.Rows[0]["IsActive"]);
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        CommonSql.CloseConnection();
-        //    }
-        //    return user;
-
-        //}
+    {       
 
         public static User LogIn(string userName, string password, string account)
         {            
@@ -100,6 +56,82 @@ namespace ExFormOfficeAddInBAL
             return user;
 
         }
+
+        public static List<KeyValuePair> GetAccountByUserId(int userId)
+        {
+            var dt = new DataTable();      
+            var accounts = new List<KeyValuePair>();
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                using (var conn = mySqlConnector.GetConnection())
+                {
+                    using (var mySqlComm = new MySqlCommand("usp_GetAccountsByUserId", conn))
+                    {
+                        mySqlComm.Parameters.AddWithValue("p_userId", userId);                        
+                        mySqlComm.CommandType = CommandType.StoredProcedure;
+
+                        using (var da = new MySqlDataAdapter())
+                        {
+                            da.SelectCommand = mySqlComm;
+                            da.Fill(dt);
+                        }
+                    }
+                }
+                foreach(DataRow row in dt.Rows)
+                {
+                    var keyValuePair = new KeyValuePair();
+                    keyValuePair.Key = (row["AccountName"]).ToString();
+                    keyValuePair.Value = (row["CompanyId"]).ToString();
+                    accounts.Add(keyValuePair);
+                }               
+            }
+            finally
+            {
+                mySqlConnector.CloseConnection();
+            }
+            return accounts;
+
+        }
+
+        public static List<KeyValuePair> GetTeamByAccount(int userId, int companyId)
+        {
+            var dt = new DataTable();
+            var teams = new List<KeyValuePair>();
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                using (var conn = mySqlConnector.GetConnection())
+                {
+                    using (var mySqlComm = new MySqlCommand("usp_GetAccountsByUserId", conn))
+                    {
+                        mySqlComm.Parameters.AddWithValue("p_userId", userId);
+                        mySqlComm.Parameters.AddWithValue("p_companyId", companyId);
+                        mySqlComm.CommandType = CommandType.StoredProcedure;
+
+                        using (var da = new MySqlDataAdapter())
+                        {
+                            da.SelectCommand = mySqlComm;
+                            da.Fill(dt);
+                        }
+                    }
+                }
+                foreach (DataRow row in dt.Rows)
+                {
+                    var keyValuePair = new KeyValuePair();
+                    keyValuePair.Key = (row["TeamName"]).ToString();
+                    keyValuePair.Value = (row["TeamId"]).ToString();
+                    teams.Add(keyValuePair);
+                }
+            }
+            finally
+            {
+                mySqlConnector.CloseConnection();
+            }
+            return teams;
+
+        }
+
         public static byte[] GetLicenseStream()
         {
             var dt = new DataTable();
@@ -132,7 +164,7 @@ namespace ExFormOfficeAddInBAL
             return null;
 
         }
-        public static List<TemplateFolder> GetTemplateFolderByCompanyId(int companyId)
+        public static List<TemplateFolder> GetTemplateFolderByCompanyId(int companyId, int teamId)
         {
             var dt = new DataTable();
             var lstTemplateFolder = new List<TemplateFolder>();
@@ -145,6 +177,7 @@ namespace ExFormOfficeAddInBAL
                     using (var mysqlComm = new MySqlCommand("usp_GetTemplateFolderByCompanyId", conn))
                     {
                         mysqlComm.Parameters.AddWithValue("p_CompanyId", companyId);
+                        mysqlComm.Parameters.AddWithValue("p_TeamID", teamId);
                         mysqlComm.CommandType = CommandType.StoredProcedure;
 
                         using (var da = new MySqlDataAdapter())
@@ -273,6 +306,7 @@ namespace ExFormOfficeAddInBAL
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("p_CompanyId", pdfTemplate.CompanyId);
+                        sqlCmd.Parameters.AddWithValue("p_TeamId", pdfTemplate.TeamId);
                         sqlCmd.Parameters.AddWithValue("p_TemplateName", pdfTemplate.TemplateName);
                         sqlCmd.Parameters.AddWithValue("p_Description", pdfTemplate.Description);
                         sqlCmd.Parameters.AddWithValue("p_TemplateFileZip", pdfTemplate.TemplateFileZip);
@@ -420,7 +454,7 @@ namespace ExFormOfficeAddInBAL
                 mySqlConnector.CloseConnection();
             }
         }
-        public static void CreateTemplateFolder(int companyId, int? parentFolderId, string folderName)
+        public static void CreateTemplateFolder(int companyId, int teamId, int? parentFolderId, string folderName)
         {
             MySqlConnector mySqlConnector = new MySqlConnector();
 
@@ -432,6 +466,7 @@ namespace ExFormOfficeAddInBAL
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("p_CompanyId", companyId);
+                        sqlCmd.Parameters.AddWithValue("p_TeamId", teamId);
 
                         if (parentFolderId.HasValue)
                             sqlCmd.Parameters.AddWithValue("p_ParentFolderId", parentFolderId);
@@ -473,7 +508,7 @@ namespace ExFormOfficeAddInBAL
                 mySqlConnector.CloseConnection();
             }
         }
-        public static void CreateTemplateCopy(int templateId, int companyId, int createdBy)
+        public static void CreateTemplateCopy(int templateId, int teamId, int companyId, int createdBy)
         {
             MySqlConnector mySqlConnector = new MySqlConnector();
 
@@ -486,6 +521,7 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.CommandType = CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("p_TemplateId", templateId);
                         sqlCmd.Parameters.AddWithValue("p_CompanyId", companyId);
+                        sqlCmd.Parameters.AddWithValue("p_TeamId", teamId);
                         sqlCmd.Parameters.AddWithValue("p_CreatedBy", createdBy);
 
                         sqlCmd.ExecuteNonQuery();
