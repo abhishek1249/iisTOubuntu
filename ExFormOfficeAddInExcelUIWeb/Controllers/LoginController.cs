@@ -1,5 +1,7 @@
 ﻿using ExFormOfficeAddInBAL;
+using ExFormOfficeAddInEntities;
 using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
 
@@ -73,6 +75,36 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     Status = ex.Message,
                     Message = ex.Message
                 };
+            }
+        }
+
+        [HttpGet()]
+        [Route("api/GetAccountByUserId")]
+        public List<KeyValuePair> GetAccountByUserId(int UserId)
+        {
+            try
+            {
+                var result = Helper.GetAccountByUserId(UserId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        [HttpGet()]
+        [Route("api/GetTeamByAccount")]
+        public List<KeyValuePair> GetTeamByAccount(int UserId, int CompanyId)
+        {
+            try
+            {
+                var result = Helper.GetTeamByAccount(UserId, CompanyId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
 
