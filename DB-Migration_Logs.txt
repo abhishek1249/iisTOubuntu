@@ -1,0 +1,28 @@
+SQL To MySQK Migration Logs-----
+
+1) usp_CreateTemplate ======>    Stored Procedure not found in the code any where
+2) usp_CreateTemplateSet =====> Need to migrate. It has user define type in it.  IsDemoTemplate Need to pass default value from code. TemplateFile, TemplateFileFieldMapping need to pass these to as josn from code
+3) usp_MapParentTableFields =====> Need to migrate. It has user define type in it. ParentField need to pass this as JSON from code
+4) usp_UpdateTemplate ======> Need to migrate. It has user define type in it. Template, TemplateFile & TemplateFileFieldMapping need to be paased as JSON from Code
+5) usp_UpdateTemplateExcelVersion =====> Need to migrate. Need to handle nullable paramater in it. ExcelBytes need to handle null for this param in code
+6) usp_UpdateTemplateSet ========> Need to migrate. It has user define type in it. Template, TemplateFile & TemplateFileFieldMapping need to be paased as JSON from Code
+
+
+
+File Directoly in Archive Folder ===============>
+
+Need to make change in SendDataToTemplateSet Method 
+Change Needs to be done ====> templateZip.AddFile(filePath, clientDirectory); Rplace clientDirectory with blank ""
+on line No - 1793, 1931, 2067
+
+Procedures Need to be Update For Teams
+
+1) usp_CreateTemplateCopy -- Done
+2) usp_CreateTemplateFolder -- Done
+3) usp_CreateTemplateSet -- Done
+4) usp_GetTemplate --- Not used in the code
+5) usp_GetTemplateByCompanyId --- Not used In the code
+6) usp_GetTemplateFolderByCompanyId -- Done
+7) usp_UpdateTemplate -- Need to make chage at code level and send data at json level as param --- Done
+8) usp_UpdateTemplateSet -- Need to make chage at code level and send data at json level as param --- Done
+9) usp_CreateTemplateSet -- Done
