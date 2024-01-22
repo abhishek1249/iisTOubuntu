@@ -55,14 +55,14 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             {
                 if(upsertTemplateFolder.ParentFolderId=="#")
                 {
-                    Helper.CreateTemplateFolder(Convert.ToInt32(upsertTemplateFolder.CompanyId), null, upsertTemplateFolder.FolderName);
+                    Helper.CreateTemplateFolder(Convert.ToInt32(upsertTemplateFolder.CompanyId), Convert.ToInt32(upsertTemplateFolder.TeamId), null, upsertTemplateFolder.FolderName);
                 }
                 else if (upsertTemplateFolder.Type == "Folder")
                 {
                     var parentFolderId = upsertTemplateFolder.ParentFolderId.Replace("F", "");
                     var folderId = upsertTemplateFolder.FolderId.Replace("F", "");
                     if (upsertTemplateFolder.Old == "New node")
-                        Helper.CreateTemplateFolder(Convert.ToInt32(upsertTemplateFolder.CompanyId), Convert.ToInt32(parentFolderId), upsertTemplateFolder.FolderName);
+                        Helper.CreateTemplateFolder(Convert.ToInt32(upsertTemplateFolder.CompanyId), Convert.ToInt32(upsertTemplateFolder.TeamId), Convert.ToInt32(parentFolderId), upsertTemplateFolder.FolderName);
                     else
                         Helper.RenameFolder(Convert.ToInt32(folderId), upsertTemplateFolder.FolderName);
                 }
@@ -113,7 +113,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             try
             {
                 var Id = duplicateTemplate.Id.Replace("T", "");
-                Helper.CreateTemplateCopy(Convert.ToInt32(Id), Convert.ToInt32(duplicateTemplate.CompanyId), Convert.ToInt32(duplicateTemplate.UserId));
+                Helper.CreateTemplateCopy(Convert.ToInt32(Id), Convert.ToInt32(duplicateTemplate.CompanyId), Convert.ToInt32(duplicateTemplate.TeamId), Convert.ToInt32(duplicateTemplate.UserId));
             }
             catch
             {
@@ -124,7 +124,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
         }
 
         [HttpGet()]
-        public object GetFolders(int? id, string companyId)
+        public object GetFolders(int? id, string companyId, string teamId)
         {
             List<JsTreeAttribute> core = new List<JsTreeAttribute>();
 
@@ -143,7 +143,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                 core.Add(obj);                
             }
             
-            var templateFolders = Helper.GetTemplateFolderByCompanyId(Convert.ToInt32(companyId));
+            var templateFolders = Helper.GetTemplateFolderByCompanyId(Convert.ToInt32(companyId), Convert.ToInt32(teamId));
             foreach (var templateFolder in templateFolders)
             {
                 //Without Child

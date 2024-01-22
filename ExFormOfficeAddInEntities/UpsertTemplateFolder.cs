@@ -8,5 +8,6 @@
         public string FolderId { get; set; }
         public string Type { get; set; }
         public string CompanyId { get; set; }
+        public string TeamId { get; set; }
     }
 }

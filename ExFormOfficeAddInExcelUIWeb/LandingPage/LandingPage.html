@@ -1,0 +1,560 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>Excel Add-In with DashBoard</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!--<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.0.1/css/scroller.dataTables.min.css">-->
+    <!--<script src="../Scripts/jquery-1.9.1.js" type="text/javascript"></script>-->
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/scroller/2.0.1/js/dataTables.scroller.min.js"></script>
+    <script src="../Scripts/FabricUI/MessageBanner.js" type="text/javascript"></script>
+    <script src="../Scripts/FabricUI/NavBar.js" type="text/javascript"></script>
+    <script src="../Scripts/FabricUI/Panel.js" type="text/javascript"></script>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- To enable offline debugging using a local reference to Office.js, use:                        -->
+    <!-- <script src="Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>  -->
+    <!-- <script src="Scripts/Office/1/office.js" type="text/javascript"></script>  -->
+
+    <link href="../App.css" rel="stylesheet" type="text/css" />
+    <script src="../App.js" type="text/javascript"></script>
+
+    <link href="../LandingPage/LandingPage.css" rel="stylesheet" type="text/css" />
+    <script src="../LandingPage/LandingPage.js" type="text/javascript"></script>
+
+    <!-- For the Office UI Fabric, go to https://aka.ms/office-ui-fabric to learn more. -->
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.min.css">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.components.min.css">
+
+    <!--Designer Codes Begin-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+    <link href="../Content/Login.css" rel="stylesheet" />
+    <script src="/Content/dist/jstree.min.js"></script>
+    <link rel="stylesheet" href="/Content/dist/themes/default/style.min.css" />
+    <!--Designer Codes End-->
+    <!-- To enable the offline use of Office UI Fabric, use: -->
+    <!-- link rel="stylesheet" href="Content/fabric.min.css" -->
+    <!-- link rel="stylesheet" href="Content/fabric.components.min.css" -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" integrity="sha256-7stu7f6AB+1rx5IqD8I+XuIcK4gSnpeGeSjqsODU+Rk=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js" integrity="sha256-qoj3D1oB1r2TAdqKTYuWObh01rIVC1Gmw9vWp1+q5xw=" crossorigin="anonymous"></script>
+    <script src="../Scripts/FileSaver.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example-getting-started').multiselect();
+        });
+    </script>
+    <style>
+        li[id^=F] > a {
+            color: #1665c0 !important;
+            font-weight: bold;
+        }
+
+        li[id^=T] > a {
+            color: #d77519 !important;
+            font-weight: bold;
+        }
+    </style>
+    <!-- Initialize the plugin: -->
+    <style>
+        .m-select {
+            float: left;
+            width: 100%;
+        }
+
+        .btn-group {
+            float: left;
+            width: 100%;
+            text-align: left;
+        }
+
+        .multiselect.dropdown-toggle.btn.btn-default {
+            float: left;
+            width: 100%;
+            text-align: left;
+            border: 1px solid #c8c8c8;
+            border-radius: 0px;
+        }
+
+            .multiselect.dropdown-toggle.btn.btn-default .caret {
+                float: right;
+                margin-top: 8px;
+            }
+
+        .multiselect-container {
+            width: 100%;
+            border-radius: 0px;
+            border: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="padding content-main">
+        <div class="exform-main">
+            <div class="ms-font-xl ms-fontColor-neutralSecondary ms-fontWeight-semilight" style="padding-bottom:8px;text-align:center">
+                <img src="/Images/logo.png" alt="ExForms" height="33" width="176">
+            </div>
+
+            <div class="login-section">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label id="ib_loggedinuser" style="float:left;"><u>Signed-in as: <span id="spnUserName">Guest</span></u></label>
+                        <div class="ms-TextField" style="float:right; margin-right:20px;">
+                            <button class="ms-Button ms-Button--primary" id="btnLogin" style="height:auto;">
+                                <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--plus"></i></span>
+                                <span class="ms-Button-label" id="button-text">Sign In</span>
+                            </button>
+                            <button class="ms-Button ms-Button--primary" id="loging" style="display:none;height:auto">
+                                <span class="ms-Button-label">Please wait...</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label style="float:left;margin-left:10px;">Account:</label>
+                    </div>
+                    <div class="col-md-8" style="float:left;">
+                        <select id="dd_account">
+                            <option value="0" selected>Annonymus</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-md-4">
+                        <label style="float: left; margin-left: 10px;">Team:</label>
+                    </div>
+                    <div class="col-md-8" style="float:left; margin-left:19px;">
+                        <select id="dd_team">
+                            <option value="0" selected>Annonymus Annonymus</option>
+                        </select>
+                    </div>
+                </div>
+                <!--<div class="row" style="margin-top:50px;">
+                    <div class="col-md-12">
+                        <p style="font-size:12px;margin-bottom:8px">In the list below, select the Set of Forms you want to fill with data from Excel. <a id="setofFormsLearnMore" style="color:#2191f1" href="javascript:void(0)">Learn more.</a></p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-md-12">
+                        <strong id="CompName" style="color:#147c08;margin-left:8px"></strong>
+                        <div id="data" class="demo"></div>
+                    </div>
+                </div>-->
+            </div>
+
+            <div id="accordion">
+                <h1 id="info">Info</h1>
+                <div class="login-section">
+                    <p style="font-size:12px">
+                        ExForms add-in will help you send data from Excel to any Forms (a form can be any form: PDF Form, a Word Form, PowerPoint, more data destinations will be added in the future.)
+                        To start, select our Demo or create your own Sets of Forms (SoF). <span style="background:#000;padding:2px 6px;border-radius:50px;color:#fff;font-weight:700" title="Sets of Forms">?</span> <a style="color:#2191f1" id="infoLearnMore" href="javascript:void(0)">Learn more.</a>
+                    </p>
+                    <p style="font-size:14px">
+                        <br>Go to your <a style="color:#2191f1" id="setofforms" href="javascript:void(0)"><b>Sets of Forms</b></a>
+                    </p>
+                </div>
+                <h1 id="templateSets">Set of Forms</h1>
+                <div class="login-section">
+                    <button class="ms-Button ms-Button--primary" style="margin-bottom:6px" id="btnInfoBack">
+                        <span class="ms-Button-label">Back</span>
+                    </button><br />
+                    <p style="font-size:12px;margin-bottom:8px">In the list below, select the Set of Forms you want to fill with data from Excel. <a id="setofFormsLearnMore" style="color:#2191f1" href="javascript:void(0)">Learn more.</a></p>
+                    <!--search disabled for now-->
+                    <!--  <input type="text" id="plugins4_q" value="" placeholder="Search from Tree" class="input" style="padding: 4px; border-radius: 4px; border: 1px solid silver; border-image: none; margin-top: 0em; margin-right: auto; margin-bottom: 1em; display: block;">-->
+                    <strong id="CompName" style="color:#147c08;margin-left:8px"></strong>
+                    <div id="data" class="demo"></div>
+                    <!--<div id="event_result" style="margin-top:2em; font-size:12px; text-align:left;width:100%;padding-bottom:2em;"><b>Selected Set of Forms:</b> None. <i>Select a set to continue!</i></div>-->
+                </div>
+
+                <h1 id="selectedSet">Selected Set</h1>
+                <div class="login-section">
+                    <button class="ms-Button ms-Button--primary" style="margin-bottom:6px" id="btnSetBack">
+                        <span class="ms-Button-label">Back</span>
+                    </button><br />
+                    <div id="event_result" style="margin-bottom:4px"><b>Selected Set of Forms:</b></div>
+                    <div id="divUpdateInfo" style="margin-bottom:4px"><b>Modified By</b></div>
+                    <div id="divSendData">
+                        <button class="ms-Button ms-Button--primary" style="height:auto" id="btnSendData">
+                            <span class="ms-Button-label">Send Data To Templates Set</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="height:auto;display:none;margin-left:1px" id="btnSendingData">
+                            <span class="ms-Button-label">Sending Data. Please wait...</span>
+                        </button>
+                        <p>
+                            Use this button to send data from Excel to the
+                            selected Set Forms.
+                        </p>
+                    </div>
+                    <div id="divDownloadExcelNote" style="margin-top:6px;display:none">
+                        <p>
+                            An administrator has released a new version of the excel template for this set,
+                            please download it to send data. Only the newest excel file can be used,
+                            you are using an outdated or wrong version.
+                        </p>
+                    </div>
+                    <div id="divDownloadExcel" style="margin-top:6px;">
+                        <button class="ms-Button ms-Button--primary" style="height:auto" id="btnDownloadExcel">
+                            <span class="ms-Button-label">Download Excel File</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="height:auto;display:none" id="btnDownloadingExcel">
+                            <span class="ms-Button-label">Downloading, Please Wait...</span>
+                        </button>
+                        <p>
+                            Download the Excel file associated with this
+                            Set of Templates and fill it with data. After you
+                            fill data in the Excel file, use the Send Data
+                            button.
+                        </p>
+                    </div>
+                    <div id="divEditSet" style="margin-top:4px">
+                        <button class="ms-Button ms-Button--primary" style="height:auto" id="btnEditSet">
+                            <span class="ms-Button-label">Edit Set</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="height:auto;display:none;margin-left:1px" id="btnEditingSet">
+                            <span class="ms-Button-label">Please Wait...</span>
+                        </button>
+                        <p>
+                            Edit Set will allow you to add (or remove)
+                            Forms in this Set of Templates, define the
+                            naming options for generated files.
+                        </p>
+                    </div>
+                </div>
+
+                <h1 id="editSet">Edit Set</h1>
+                <div class="login-section">
+                    <div style="margin-bottom:4px">
+                        <button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto" id="btnSelectedSetBack">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto" id="btnAutomapFields">
+                            <span class="ms-Button-label">Automap Fields</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto;display:none" id="btnAutomappingFields">
+                            <span class="ms-Button-label">Please Wait...</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto" id="btnRemoveMappings">
+                            <span class="ms-Button-label">Remove Mappings</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto;display:none" id="btnRemovingMappings">
+                            <span class="ms-Button-label">Please Wait...</span>
+                        </button>
+                    </div>
+                    <div class="ms-TextField">
+                        <label class="ms-Label">Set Name:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtExistingSetName" value="" placeholder="Set Name">
+                    </div>
+                    <div class="ms-TextField">
+                        <label class="ms-Label">Description:<span style="color:red;">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtSetDescription">
+                    </div>
+                    <div class="ms-TextField" style="display:none">
+                        <label class="ms-Label">Output Subfolder Name:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtSetSubfolderName">
+                    </div>
+                    <div class="ms-TextField" style="display:none">
+                        <label class="ms-Label">Output File Namimg Options:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtSetOuptputFileName">
+                    </div>
+                    <div class="ms-TextField" style="margin-right:4px;float:right" id="btnNamingOptions">
+                        <button class="ms-Button ms-Button--primary" style="height:auto;float:right">
+                            <span class="ms-Button-label">Naming Options</span>
+                        </button>
+                    </div>
+                    <div style="margin-top:6px;" class="ms-TextField" id="divSetFiles">
+                    </div>
+                    <div style="margin-top:4px;">
+                        <form method="post" action="/api/Template/UpdateTemplate" enctype="multipart/form-data" id="pdfFormUpload" class="ms-TextField">
+                            <div class="ms-TextField">
+                                <label class="ms-Label" for="files">Add more Forms to this Set[MAX 16MB]:</label>
+                                <input class="ms-TextField-field" style="height:40px;" type="file" id="newFiles" name="newFiles" multiple accept="application/pdf" />
+                            </div>
+                        </form>
+                        <!--<form method="post" action="/api/Template/UpdateExcelVersion" enctype="multipart/form-data" id="formUpload" class="ms-TextField">
+                    <div class="ms-TextField">
+                        <label class="ms-Label" for="files">Browse Excel for Version Update:</label>
+                        <input class="ms-TextField-field" style="height:40px;" type="file" id="excelVersionFile" name="excelVersionnFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                    </div>
+                </form>-->
+                    </div>
+                    <div style="float:right">
+                        <!--<button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto" id="btnUpdateVersion" title="Update current version of your Excel">
+                    <span class="ms-Button-label">Update Excel Version</span>
+                </button>
+                <button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto;display:none" id="btnUpdatingVersion">
+                    <span class="ms-Button-label">Please Wait...</span>
+                </button>-->
+                        <button class="ms-Button ms-Button--primary" style="margin-top:4px;margin-bottom:4px;height:auto" id="btnSaveExistingSet">
+                            <span class="ms-Button-label">Save</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="margin-left:4px;height:auto;display:none" id="btnSavingExistingSet">
+                            <span class="ms-Button-label">Please Wait...</span>
+                        </button>
+                    </div>
+                </div>
+
+                <h1 id="editFieldsMapping">Edit Fields Mapping</h1>
+                <div class="login-section">
+                    <script>
+                        $(document).ready(function () {
+                            $('[data-toggle="popover"]').popover();
+                            $('.btncalloutmapping').popover({
+                                title: "<span>Mapping info</span>",
+                                content: "<div id='divLegend' style='margin-top:10px;margin-bottom:10px'>" +
+                                    "&nbsp;&nbsp;<span class='glyphicon glyphicon-file text-success'>&nbsp;Static Field(Mapped)</span>&nbsp;&nbsp;" +
+                                    "<span class='glyphicon glyphicon-file text-danger'>&nbsp;Static Field(UnMapped)</span>&nbsp;&nbsp;" +
+                                    "<span class='glyphicon glyphicon-align-justify text-success'>&nbsp;Dynamic Section(Mapped)</span>&nbsp;&nbsp;" +
+                                    "<span class='glyphicon glyphicon-align-justify text-danger'>&nbsp;Dynamic Section(UnMapped)</span>&nbsp;&nbsp;" +
+                                    "<span class='glyphicon glyphicon-duplicate text-success'>&nbsp;Dynamic Field(Mapped)</span>&nbsp;&nbsp;" +
+                                    "<span class='glyphicon glyphicon-duplicate text-danger'>&nbsp;Dynamic Field(UnMapped)</span>" +
+                                    "<br/> <br/> <a style='color:#2191f1' href='http://exceltoforms.com' target='_blank'>Learn more.</a> " +
+                                    "</div>",
+                                html: true, placement: "left"
+                            });
+                        });
+                    </script>
+                    <div style="margin-top:10px;float:right">
+                        <span class="btncalloutmapping" style="background:#000;padding:2px 6px;border-radius:50px;color:#fff;font-weight:700;cursor: help;">?</span>
+                    </div>
+                    <div style="float:left">
+                        <button class="ms-Button ms-Button--primary" style="margin-left:6px" id="btnEditFieldsMappingBack">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto" id="btnRemoveFileMapping">
+                            <span class="ms-Button-label">Remove Mapping</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto;display:none" id="btnRemovingFileMapping">
+                            <span class="ms-Button-label">Please Wait...</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto" id="btnTableRelationship">
+                            <span class="ms-Button-label">Table Relationship</span>
+                        </button>
+
+
+                        <!--<div id="divLegend" style="margin-top:10px;margin-bottom:10px">
+                    &nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-file text-success">&nbsp;Static Field(Mapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-file text-danger">&nbsp;Static Field(UnMapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-align-justify text-success">&nbsp;Dynamic Field(Mapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-align-justify text-danger">&nbsp;Dynamic Field(UnMapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-duplicate text-success">&nbsp;Dynamic Element(Mapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-duplicate text-danger">&nbsp;Dynamic Element(UnMapped)</span>
+                </div>-->
+                        <div id="editdata" style="margin-top:4px;margin-bottom:10px" class="demo"></div>
+                    </div>
+                </div>
+
+                <h1 id="newSet">Add New Set</h1>
+                <div class="login-section">
+                    <button class="ms-Button ms-Button--primary" id="btnNewSetBack">
+                        <span class="ms-Button-label">Back</span>
+                    </button>
+                    <div class="ms-TextField" style="margin-top:6px">
+                        <label class="ms-Label">Set Name:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtSetName" value="" placeholder="Set Name">
+                    </div>
+                    <div class="ms-TextField">
+                        <label class="ms-Label">Description:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtDescription" value="" placeholder="Set Description">
+                    </div>
+                    <div class="ms-TextField" style="display:none">
+                        <label class="ms-Label">Output Subfolder Name:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtSubfolderName" value="{ID}" placeholder="Subfolder Name">
+                    </div>
+                    <div class="ms-TextField" style="display:none">
+                        <label class="ms-Label">Output File Namimg Options:<span style="color:red">*</span></label>
+                        <input class="ms-TextField-field" type="text" id="txtOuptputFileName" value="{OriginalFileName}{ID}" placeholder="Output File Naming Options">
+                    </div>
+                    <div>
+                        <form method="post" action="../../api/UploadFile/UploadFiles" enctype="multipart/form-data" id="formUpload" class="ms-TextField">
+                            <div class="ms-TextField">
+                                <label class="ms-Label" for="files">Browse PDF Template Files[MAX 16MB]:</label>
+                                <input class="ms-TextField-field" style="height:40px;" type="file" id="files" name="files" multiple accept="application/pdf" />
+                            </div>
+                            <!--<div class="ms-TextField">
+                        <label class="ms-Label" for="files">Browse Excel Template[MAX 16MB]:</label>
+                        <input class="ms-TextField-field" style="height:40px;" type="file" id="excelFile" name="excelFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                    </div>-->
+                        </form>
+
+                        <div id="divFile" style="width:100%">
+                            <output id="list"></output>
+                        </div>
+                    </div>
+                    <div class="ms-TextField" style="float:right">
+                        <button class="ms-Button ms-Button--primary" id="btnSave">
+                            <span class="ms-Button-label">Save</span>
+                        </button>
+                        <button class="ms-Button ms-Button--primary" style="display:none;height:auto" id="btnSaving">
+                            <span class="ms-Button-label">Creating Template Set. Please Wait...</span>
+                        </button>
+                    </div>
+                </div>
+
+                <h1 id="defaults">Defaults</h1>
+                <div class="login-section">
+                    <div id="divDefaults">
+                        <button class="ms-Button ms-Button--primary" id="btnDefaultsBack">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                        <div class="ms-TextField" style="margin-top:6px">
+                            <label class="ms-Label">Default SubFolder Names:</label>
+                            <input class="ms-TextField-field" type="text" id="txtDefaultsSubFolderName" value="{ID}">
+                            <button class="ms-Button ms-Button--primary" style="float:right" id="btnDefaultsSubFolderNameEdit">
+                                <span class="ms-Button-label">Edit</span>
+                            </button>
+                        </div>
+                        <div class="ms-TextField" style="margin-top:6px">
+                            <label class="ms-Label">Default File Names:</label>
+                            <input class="ms-TextField-field" type="text" id="txtDefaultsFileName" value="{OriginalFileName}{ID}">
+                            <button class="ms-Button ms-Button--primary" style="float:right" id="btnDefaultsFileNameEdit">
+                                <span class="ms-Button-label">Edit</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="divNamingOptions" style="display:none">
+                        <button class="ms-Button ms-Button--primary" style="margin-bottom:4px" id="btnNamingOptionsBack">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                        <p>
+                            To select name components, select one or more field(s) from the list then save it.
+                            You can rearrange the list items by selecting an item and clicking on Move Up and Move Down.
+                        </p>
+                        <div class="ms-TextField">
+                            <div style="float:left;width:100%; margin-right:2%;">
+                                <label class="ms-Label">Available Fields:</label>
+                                <div style="overflow-y:auto">
+                                    <select id="fields" class="ms-TextField-field" multiple size="6">
+                                        <!--<option value="ID">ID</option>
+                                <option value="OriginalFileName">OriginalFileName</option>-->
+                                    </select>
+                                </div>
+                                <button class="ms-Button ms-Button--primary" style="height:auto;margin-top:4px; width:100%; margin-left:0px;" id="btnMoveUp">
+                                    <span class="ms-Button-label">Move Up</span>
+                                </button>
+                                <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto; width:100%; margin-left:0px;" id="btnMoveDown">
+                                    <span class="ms-Button-label">Move Down</span>
+                                </button>
+                                <button class="ms-Button ms-Button--primary" style="margin-top:4px;height:auto; width:100%; margin-left:0px;" id="btnAddCustomText">
+                                    <span class="ms-Button-label">Add Custom Text</span>
+                                </button>
+                            </div>
+
+                            <div style="float:left;margin-top:4px;width:100%">
+                                <label class="ms-Label">Separator:</label>
+                                <select name="lbAvailableFields" class="ms-TextField-field" style="float:left;width:100%" id="separator">
+                                    <option value="-">-</option>
+                                    <option value="{space}">{space}</option>
+                                    <option value="{no separator}">{no separator}</option>
+                                </select>
+                            </div>
+
+                            <div style="float:right">
+                                <button class="ms-Button ms-Button--primary" style="margin-top:6px;float:right;margin-bottom:4px" id="btnSaveNameOptions">
+                                    <span class="ms-Button-label">Save</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="divCustomText" style="display:none">
+                        <button class="ms-Button ms-Button--primary" id="btnCustomTextBack">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                        <div class="ms-TextField" style="margin-top:6px">
+                            <label class="ms-Label">Custom Text:<span style="color:red">*</span></label>
+                            <input class="ms-TextField-field" type="text" id="txtCustomText">
+                            <button class="ms-Button ms-Button--primary" style="float:right" id="btnSaveCustomText">
+                                <span class="ms-Button-label">Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 id="ParentChildTable">Table Relationship</h1>
+                <div class="login-section">
+                    <div style="margin-bottom:4px">
+                        <button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto" id="btnTableRelationshipBack">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                    </div>
+                    <div style="margin-top:4px;" class="ms-TextField" id="divParentChildTable"></div>
+                </div>
+
+                <h1 id="ParentChildTableRelationship">Parent Child Table Relationship</h1>
+                <div class="login-section">
+                    <div style="margin-bottom:4px">
+                        <button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto" id="btnParentChildTableRelationshipBack">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                    </div>
+                    <div style="margin-top:6px; width:100%" class="ms-TextField">
+                        <p>
+                            <label class="ms-Label">Parent Fields:<span style="color:red">*</span></label>
+                            <select id="parent" class="ms-TextField-field" style="width:100%">
+                                <!--<option value="Select">Select</option>
+                        <option value="ID">ID</option>-->
+                            </select>
+                        </p>
+                        <p>
+                            <label class="ms-Label">Child Fields:<span style="color:red">*</span></label>
+                            <select id="child" class="ms-TextField-field" style="width:100%">
+                                <!--<option value="Select">Select</option>
+                        <option value="ID">ID</option>-->
+                            </select>
+                        </p>
+                    </div>
+                    <div style="margin-top:4px">
+                        <button class="ms-Button ms-Button--primary" style="float:right;height:auto" id="btnSaveParentChildTableRelationship">
+                            <span class="ms-Button-label">Save</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer" id="Logout-buttonn" style="cursor:pointer">
+        <div class="ms-Grid ms-bgColor-themeSecondary">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12" style="padding: 10px 0px;">
+                    <div id="logout" class="ms-font-x ms-fontColor-white" style="text-align: center;">Logout</div>
+                    <div id="loggingout" class="ms-font-x ms-fontColor-white" style="text-align: center;display:none">Logging Out...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dialog-confirm" title="Confirm Delete">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure you want to delete this item?</p>
+    </div>
+    <div id="dialog-deleteFile" title="Confirm Delete">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure you want to delete this file?</p>
+    </div>
+    <div id="dialog-removeAllMappings" title="Confirm">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure you want to remove the mappings for this template set?</p>
+    </div>
+    <div id="dialog-removeFileMappings" title="Confirm">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure you want to remove the mapping for this template file?</p>
+    </div>
+    <div id="dialog-autoMappings" title="Confirm Auto Fields Mapping">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure you want to auto map the fields for this template file? The existing mapping(s) will be lost.</p>
+    </div>
+    <div id="dialog-editFieldsMappingBack" title="Confirm">
+        <!--<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span></p>-->
+    </div>
+    <div id="dialog-sendData" title="Message">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>A new page will open on your default browser to download the generated files. Please note that for safety reasons, they are not permanently stored on our servers, the filled forms will be deleted immediately to protect your data. If you did not save the generated files archive, you have to send data again.</p>
+    </div>
+    <div id="dialog-notification">
+
+    </div>
+</body>
+</html>
