@@ -10,6 +10,8 @@ namespace ExFormOfficeAddInEntities
     public class PdfTemplate
     {
         public int? CompanyId { get; set; }
+
+        public int? TeamId { get; set; }
         public string TemplateName { get; set; }
         public string Description { get; set; }
         public byte[] TemplateFileZip { get; set; }
