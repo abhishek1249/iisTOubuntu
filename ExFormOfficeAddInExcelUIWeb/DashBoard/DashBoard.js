@@ -23,7 +23,7 @@ var excludeFiles = '';
 var rootNodeText = '';
 var excelVersion = '';
 var isNamingOptionsModified = false;
-
+var teamId = "0";
 
 (function () {
     "use strict";
@@ -129,7 +129,7 @@ var isNamingOptionsModified = false;
                     'data': {
                         "url": "/api/TreeNode/GetFolders",
                         "data": function (node) {
-                            return { "id": node.id.replace(/F/ig, "").replace(/T/ig, ""), "companyId": localStorage.getItem("CompanyID") };
+                            return { "id": node.id.replace(/F/ig, "").replace(/T/ig, ""), "companyId": localStorage.getItem("CompanyID"), "teamId": teamId };
                         },
                         "dataType": "json",
                         "type": "get",
@@ -801,7 +801,8 @@ var isNamingOptionsModified = false;
                         Old: data.old,
                         FolderId: data.node.id,
                         Type: data.node.type,
-                        CompanyId: localStorage.getItem("CompanyID")
+                        CompanyId: localStorage.getItem("CompanyID"),
+                        TeamId: teamId
                     };
                     $.ajax({
                         url: "/api/TreeNode/UpsertTemplateFolder",
@@ -825,7 +826,8 @@ var isNamingOptionsModified = false;
                 var param = {
                     Id: data.node[0],
                     CompanyId: localStorage.getItem("CompanyID"),
-                    UserId: localStorage.getItem("UserID")
+                    UserId: localStorage.getItem("UserID"),
+                    TeamId: teamId
                 };
                 $.ajax({
                     url: "/api/TreeNode/CreateDuplicateTemplate",
@@ -1160,6 +1162,11 @@ var isNamingOptionsModified = false;
 
         });
     };
+
+    $("#dd_team").change(function () {
+        teamId = $('option:selected', this).id;
+        alert(teamId + " " + $('option:selected', this).text());
+    });
 
     function getDocumentAsCompressed(formData) {
         Office.context.document.getFileAsync(Office.FileType.Compressed, { sliceSize: 65536 /*64 KB*/ },
@@ -3290,6 +3297,7 @@ var isNamingOptionsModified = false;
                 TemplateName: templateName,
                 Description: description,
                 CompanyId: parseInt(localStorage.getItem("CompanyID")),
+                TeamId: teamId,
                 TemplateFileZip: null,
                 IsActive: true,
                 CreatedOn: new Date(),
@@ -3307,6 +3315,7 @@ var isNamingOptionsModified = false;
             formData.append('TemplateName', pdfTemplate.TemplateName);
             formData.append('Description', pdfTemplate.Description);
             formData.append('CompanyId', pdfTemplate.CompanyId);
+            formData.append('TeamId', pdfTemplate.TeamId);
             formData.append('TemplateFileZip', pdfTemplate.TemplateFileZip);
             formData.append('IsActive', pdfTemplate.IsActive);
             formData.append('CreatedOn', pdfTemplate.CreatedOn);

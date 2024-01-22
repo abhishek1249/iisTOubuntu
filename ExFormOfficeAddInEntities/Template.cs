@@ -7,6 +7,7 @@ namespace ExFormOfficeAddInEntities
     {
         public int TemplateId { get; set; }
         public int? CompanyId { get; set; }
+        public int? TeamId { get; set; }
         public string TemplateName { get; set; }
         public string Description { get; set; }
         public byte[] TemplateFileZip { get; set; }
@@ -23,6 +24,7 @@ namespace ExFormOfficeAddInEntities
         public string Id { get; set; }
         public string CompanyId { get; set; }
         public string UserId { get; set; }
+        public string TeamId { get; set; }
     }
     public class ParentChildTable
     {

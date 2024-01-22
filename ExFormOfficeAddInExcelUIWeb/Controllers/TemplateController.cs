@@ -137,6 +137,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     TemplateName = pdfTemplate.TemplateName,
                     Description = pdfTemplate.Description,
                     CompanyId = pdfTemplate.CompanyId,
+                    TeamId = pdfTemplate.TeamId,
                     TemplateFileZip = new MemoryStream().ToArray(),
                     IsActive = pdfTemplate.IsActive,
                     CreatedOn = DateTime.Now,
@@ -245,6 +246,9 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                                 break;
                             case "CompanyId":
                                 pdfTemplateSet.CompanyId = Convert.ToInt32(httpContext.Request[key]);
+                                break;
+                            case "TeamId":
+                                pdfTemplateSet.TeamId = Convert.ToInt32(httpContext.Request[key]);
                                 break;
                             case "TemplateFileZip":
                                 pdfTemplateSet.TemplateFileZip = new MemoryStream().ToArray();
@@ -2534,6 +2538,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
         {
             dtEditTemplate.Columns.Add("TemplateId", typeof(int));
             dtEditTemplate.Columns.Add("CompanyId", typeof(int));
+            dtEditTemplate.Columns.Add("TeamId", typeof(int));
             dtEditTemplate.Columns.Add("TemplateName", typeof(string));
             dtEditTemplate.Columns.Add("Description", typeof(string));
             dtEditTemplate.Columns.Add("TemplateFileZip", typeof(byte[]));
