@@ -23,7 +23,7 @@ var excludeFiles = '';
 var rootNodeText = '';
 var excelVersion = '';
 var isNamingOptionsModified = false;
-
+var msgSignInError = 'Please sign-in to access all the features';
 
 (function () {
     "use strict";
@@ -33,8 +33,14 @@ var isNamingOptionsModified = false;
             app.initialize();
             // Initialize the FabricUI notification mechanism and hide it
             var to = false;
+
+            localStorage.setItem("CompanyID", "0");
+            localStorage.setItem("UserID", "0");
+            localStorage.setItem("CompanyName", "Guest");
+            localStorage.setItem("UserType", "");
+
             $('.ms-NavBar').NavBar();
-            $("#logout").show();
+            $("#logout").hide();
             $("#loggingout").hide();
             $("#accordion").accordion();
 
@@ -59,7 +65,7 @@ var isNamingOptionsModified = false;
             $('#txtDefaultsSubFolderName').attr('readonly', 'true');
             $('#txtDefaultsFileName').attr('readonly', 'true');
 
-
+            $("#btnLogin").click(RedirectToLoginPage);
             $("#btnSave").click(CreateTemplate);
             //$("#btnUpdateVersion").click(UpdateExcelVersion);
             $("#btnEditSet").click(EditSet);
@@ -107,7 +113,10 @@ var isNamingOptionsModified = false;
             $("#setofforms").click(SetOfForms);
             if (localStorage.getItem("CompanyName") === "") {
                 $("#CompName").html("Super Admin's Forms List");
-            } else {
+            } else if (localStorage.getItem("CompanyName") === "Guest") {
+                $("#CompName").html("Guest's Forms List");
+            }
+            else {
                 $("#CompName").html(localStorage.getItem("CompanyName") + "'s Forms List");
             }
 
@@ -786,6 +795,12 @@ var isNamingOptionsModified = false;
             });
 
             $('#data').on('rename_node.jstree', function (e, data) {
+
+                if (localStorage.getItem("CompanyID") == "0" || localStorage.getItem("CompanyID") == undefined) {
+                    app.showNotification('Error', msgSignInError);
+                    e.preventDefault();
+                    return;
+                }
                 if (data.node.original.IsDemo && data.node.type === "Folder") {
                     e.preventDefault();
                     return;
@@ -822,6 +837,12 @@ var isNamingOptionsModified = false;
             });
 
             $('#data').on('copy.jstree', function (e, data) {
+
+                if (localStorage.getItem("CompanyID") == "0" || localStorage.getItem("CompanyID") == undefined) {
+                    app.showNotification('Error', msgSignInError);
+                    e.preventDefault();
+                    return;
+                }
                 var param = {
                     Id: data.node[0],
                     CompanyId: localStorage.getItem("CompanyID"),
@@ -847,6 +868,13 @@ var isNamingOptionsModified = false;
             });
 
             $('#data').on('delete_node.jstree', function (e, data) {
+
+                if (localStorage.getItem("CompanyID") == "0" || localStorage.getItem("CompanyID") == undefined) {
+                    app.showNotification('Error', msgSignInError);
+                    e.preventDefault();
+                    return;
+                }
+
                 var param = {
                     Id: data.node.id,
                     Type: data.node.type
@@ -3211,7 +3239,12 @@ var isNamingOptionsModified = false;
             //table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
             //table_body += '</td>';
             table_body += '<td>';
-            table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+            if (isDemoSet) {                
+                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + " style='pointer-events: none'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";               
+            }
+            else {
+                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";               
+            }
             table_body += '</td>';
             table_body += '<td>';
             table_body += " " + data.Files[i].FileName;
@@ -3293,7 +3326,7 @@ var isNamingOptionsModified = false;
                 TemplateFileZip: null,
                 IsActive: true,
                 CreatedOn: new Date(),
-                CreatedBy: parseInt(localStorage.getItem("UserID")),
+                CreatedBy: 0,//parseInt(localStorage.getItem("UserID")),
                 ExcelZip: null,
                 TemplateFile: pdffiles.join(','),
                 TemplateFileFieldMapping: null,
@@ -3593,10 +3626,14 @@ var isNamingOptionsModified = false;
         });
     }
 
+    function RedirectToLoginPage() {
+        $("#btnLogin").hide();
+        $("#loggingout").show();
+        window.location.href = '../Login.html';
+    }
     function LogoutBtn() {
         $("#logout").hide();
-        $("#loggingout").show();
-        localStorage.clear();
+        $("#loging").show();
         setTimeout(function () {
             app.Signout();
         }, 250);
