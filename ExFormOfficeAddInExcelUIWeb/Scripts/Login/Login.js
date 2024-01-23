@@ -14,7 +14,7 @@
             //messageBanner.hideBanner();
             $('#txtusername').val("catalin@exceltoforms.com");
             $('#txtpassword').val("ExcelDev");
-            $('#txtAccount').val("exforms");
+            //$('#txtAccount').val("exforms");
             /*$('#txtusername').focus();*/
             $('#Login-button').click(LoginProcess);
             $("#dialog-notification").dialog({
@@ -31,6 +31,7 @@
                 }
             });
         });
+        $('#btnBack').click(RedirectToLandingPage);
     };
 
     function LoginProcess() {        
@@ -40,7 +41,7 @@
                     var dataToPassToService = {
                         UserName: $.trim($('#txtusername').val()),
                         Password: $.trim($('#txtpassword').val()),
-                        UserAccount: $.trim($('#txtAccount').val())
+                        UserAccount: "" //$.trim($('#txtAccount').val())
                     };
 
                     if (validateUser(dataToPassToService.UserName, dataToPassToService.Password, dataToPassToService.UserAccount)) {
@@ -99,16 +100,16 @@
             $('#txtpassword').focus();
             return false;
         }
-        else if (account === '') {
-            app.showNotification('Error', "Please enter account name.");
-            $('#txtAccount').focus();
-            return false;
-        }
-        else if (account.length > 150) {
-            app.showNotification('Error', "Account name cannot exceed 150 characters.");
-            $('#txtAccount').focus();
-            return false;
-        }
+        //else if (account === '') {
+        //    app.showNotification('Error', "Please enter account name.");
+        //    $('#txtAccount').focus();
+        //    return false;
+        //}
+        //else if (account.length > 150) {
+        //    app.showNotification('Error', "Account name cannot exceed 150 characters.");
+        //    $('#txtAccount').focus();
+        //    return false;
+        //}
         return true;
     }
     
@@ -126,5 +127,9 @@
         $('#ms-MessageBanner').slideDown('slow');
         messageBanner.showBanner();
         messageBanner.toggleExpansion();
+    }
+
+    function RedirectToLandingPage() {       
+        window.location.href = '../LandingPage/LandingPage.html';
     }
 })();

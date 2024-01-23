@@ -124,13 +124,13 @@ var msgSignInError = 'Please sign-in to access all the features';
                 localStorage.setItem("isSaved", false);
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });
             }
             if (localStorage.getItem("isTemplateSetEdited") === "true") {
                 localStorage.setItem("isTemplateSetEdited", false);
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });
             }
             $('#data').jstree({
                 'core': {
@@ -230,7 +230,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                             $('#btnUpload').hide();
                             $('#templateSets').hide();
                             $('#newSet').show();
-                            $("#accordion").accordion({ active: 5 });
+                            $("#accordion").accordion({ active: 4 });
                         }
                     },
                     "DeleteFolder": {
@@ -302,7 +302,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                                         $('#divDownloadExcelNote').hide();
                                                         $('#templateSets').hide();
                                                         $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
+                                                        $("#accordion").accordion({ active: 1 });
                                                         //app.showNotification('Message', 'saved customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                                     }
                                                     else {
@@ -314,7 +314,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                                         $('#divDownloadExcelNote').show();
                                                         $('#templateSets').hide();
                                                         $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
+                                                        $("#accordion").accordion({ active: 1 });
                                                         //app.showNotification('Message', 'save customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                                     }
                                                 }).fail(function (status) {
@@ -338,7 +338,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                                         $('#divDownloadExcelNote').hide();
                                                         $('#templateSets').hide();
                                                         $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
+                                                        $("#accordion").accordion({ active: 1 });
                                                         //app.showNotification('Message', 'excel customxmlid=' + xmlpart.id);
                                                     } else {
                                                         app.showNotification('Error', res.Error);
@@ -365,7 +365,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                                         $('#divDownloadExcelNote').hide();
                                                         $('#templateSets').hide();
                                                         $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
+                                                        $("#accordion").accordion({ active: 1 });
                                                         //app.showNotification('Message', 'excel customxmlid=undefined');
                                                     } else {
                                                         app.showNotification('Error', res.Error);
@@ -525,7 +525,7 @@ var msgSignInError = 'Please sign-in to access all the features';
             function SetOfForms() {
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });
             }
 
             function GetMappedPercentage(fileId) {
@@ -541,7 +541,7 @@ var msgSignInError = 'Please sign-in to access all the features';
             function BackToInfo() {
                 $('#info').show();
                 $('#templateSets').hide();
-                $("#accordion").accordion({ active: 0 });
+                $("#accordion").accordion({ active: -1 });
             }
 
             function BackToSet() {
@@ -551,7 +551,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                     $('#selectedSet').hide();
                     $('#newSet').hide();
                     $('#templateSets').show();
-                    $("#accordion").accordion({ active: 1 });
+                    $("#accordion").accordion({ active: 0 });
                 }
             }
 
@@ -586,7 +586,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                         $('#divDownloadExcel').hide();
                                         $('#editSet').hide();
                                         $('#selectedSet').show();
-                                        $("#accordion").accordion({ active: 2 });
+                                        $("#accordion").accordion({ active: 1 });
                                     }
                                     else {
                                         isExcelVersioMatching = false;
@@ -595,7 +595,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                         $('#divDownloadExcel').show();
                                         $('#editSet').hide();
                                         $('#selectedSet').show();
-                                        $("#accordion").accordion({ active: 2 });
+                                        $("#accordion").accordion({ active: 1 });
                                     }
                                 }).fail(function (status) {
                                     app.showNotification('Error', 'Could not communicate with the server.');
@@ -603,7 +603,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                             } else {
                                 $('#editSet').hide();
                                 $('#selectedSet').show();
-                                $("#accordion").accordion({ active: 2 });
+                                $("#accordion").accordion({ active: 1 });
                             }
                         });
                 });
@@ -735,7 +735,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                 $('#defaults').hide();
                                 $('#editFieldsMapping').hide();
                                 $('#editSet').show();
-                                $("#accordion").accordion({ active: 3 });
+                                $("#accordion").accordion({ active: 2 });
                             }).fail(function (status) {
                                 app.showNotification('Error', 'Could not communicate with the server.');
                             }).always(function () {
@@ -746,7 +746,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                             $('#defaults').hide();
                             $('#editFieldsMapping').hide();
                             $('#editSet').show();
-                            $("#accordion").accordion({ active: 3 });
+                            $("#accordion").accordion({ active: 2 });
                         }
                     },
                     Cancel: function () {
@@ -962,7 +962,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });
                                             //app.showNotification('Message', 'saved customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                         }
                                         else {
@@ -974,7 +974,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                             $('#divDownloadExcelNote').show();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });
                                             //app.showNotification('Message', 'save customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                         }
                                     }).fail(function (status) {
@@ -998,7 +998,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });
                                             //app.showNotification('Message', 'excel customxmlid=' + xmlpart.id);
                                         } else {
                                             app.showNotification('Error', res.Error);
@@ -1025,7 +1025,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });
                                             //app.showNotification('Message', 'excel customxmlid=undefined');
                                         } else {
                                             app.showNotification('Error', res.Error);
@@ -1241,7 +1241,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                 }
                 $('#editSet').hide();
                 $('#defaults').show();
-                $("#accordion").accordion({ active: 6 });
+                $("#accordion").accordion({ active: 5 });
             }
         }).fail(function (status) {
             app.showNotification('Error', status.responseText);
@@ -1252,7 +1252,7 @@ var msgSignInError = 'Please sign-in to access all the features';
         $('#defaults').hide();
         $('#editFieldsMapping').hide();
         $('#editSet').show();
-        $("#accordion").accordion({ active: 3 });
+        $("#accordion").accordion({ active: 2 });
     }
 
     function SendDataToTemplateSet() {
@@ -1678,7 +1678,7 @@ var msgSignInError = 'Please sign-in to access all the features';
     function BackToEditFieldsMapping() {
         $('#ParentChildTable').hide();
         $('#editFieldsMapping').show();
-        $("#accordion").accordion({ active: 4 });
+        $("#accordion").accordion({ active: 3 });
     }
 
     function BackToTableRelationship() {
@@ -1702,7 +1702,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                     });
                     $('#ParentChildTableRelationship').hide();
                     $('#ParentChildTable').show();
-                    $("#accordion").accordion({ active: 7 });
+                    $("#accordion").accordion({ active: 6 });
                 } else {
                     app.showNotification('Message', 'No parent and child table found for the file.');
                 }
@@ -1714,7 +1714,7 @@ var msgSignInError = 'Please sign-in to access all the features';
         } else {
             $('#ParentChildTableRelationship').hide();
             $('#ParentChildTable').show();
-            $("#accordion").accordion({ active: 7 });
+            $("#accordion").accordion({ active: 6 });
         }
     }
 
@@ -2334,7 +2334,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                 });
                 $('#editFieldsMapping').hide();
                 $('#ParentChildTable').show();
-                $("#accordion").accordion({ active: 7 });
+                $("#accordion").accordion({ active: 6 });
             } else {
                 app.showNotification('Message', 'No parent and child table found for the file.');
             }
@@ -2431,7 +2431,7 @@ var msgSignInError = 'Please sign-in to access all the features';
                     }
                     $('#ParentChildTable').hide();
                     $('#ParentChildTableRelationship').show();
-                    $("#accordion").accordion({ active: 8 });
+                    $("#accordion").accordion({ active: 7 });
                 } else {
                     app.showNotification('Error', 'Something went wrong. Please try again.');
                 }
@@ -2647,7 +2647,7 @@ var msgSignInError = 'Please sign-in to access all the features';
 
             $('#editSet').hide();
             $('#editFieldsMapping').show();
-            $("#accordion").accordion({ active: 4 });
+            $("#accordion").accordion({ active: 3 });
         }
     }
 
@@ -3107,7 +3107,7 @@ var msgSignInError = 'Please sign-in to access all the features';
 
                 $('#selectedSet').hide();
                 $('#editSet').show();
-                $("#accordion").accordion({ active: 3 });
+                $("#accordion").accordion({ active: 2 });
             } else {
                 app.showNotification('Error', 'Could not communicate with the server.');
             }
