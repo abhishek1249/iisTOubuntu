@@ -102,8 +102,59 @@
             <div class="ms-font-xl ms-fontColor-neutralSecondary ms-fontWeight-semilight" style="padding-bottom:8px;text-align:center">
                 <img src="/Images/logo.png" alt="ExForms" height="33" width="176">
             </div>
+
+            <div class="login-section">
+                <!--<div class="row">
+                    <div class="col-md-12">
+                        <label id="ib_loggedinuser" style="float:left;"><u>Signed-in as: <span id="spnUserName">Guest</span></u></label>
+                        <div class="ms-TextField" style="float:right; margin-right:20px;">
+                            <button class="ms-Button ms-Button--primary" id="Login-button" style="height:auto;">
+                                <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--plus"></i></span>
+                                <span class="ms-Button-label" id="button-text">Sign In</span>
+                            </button>
+                            <button class="ms-Button ms-Button--primary" id="loging" style="display:none;height:auto">
+                                <span class="ms-Button-label">Please wait...</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>-->
+                <div class="row">
+                    <div class="col-md-4">
+                        <label style="float:left;margin-left:10px;">Account:</label>
+                    </div>
+                    <div class="col-md-8" style="float:left;">
+                        <select id="dd_account">
+                            <option value="0" selected>Select</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="divTeam" class="row" style="margin-top:20px; display:none;">
+                    <div class="col-md-4">
+                        <label style="float: left; margin-left: 10px;">Team:</label>
+                    </div>
+                    <div class="col-md-8" style="float:left; margin-left:19px;">
+                        <select id="dd_team">
+                            <option value="0" selected>Select</option>
+                            <!--<option value="58" selected>ExForms_TEAM</option>
+                            <option value="60" selected>ExForms_TEAM2</option>-->
+                        </select>
+                    </div>
+                </div>
+                <!--<div class="row" style="margin-top:50px;">
+                    <div class="col-md-12">
+                        <p style="font-size:12px;margin-bottom:8px">In the list below, select the Set of Forms you want to fill with data from Excel. <a id="setofFormsLearnMore" style="color:#2191f1" href="javascript:void(0)">Learn more.</a></p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-md-12">
+                        <strong id="CompName" style="color:#147c08;margin-left:8px"></strong>
+                        <div id="data" class="demo"></div>
+                    </div>
+                </div>-->
+            </div>
+
             <div id="accordion">
-                <h1 id="info">Info</h1>
+                <!--<h1 id="info">Info</h1>
                 <div class="login-section">
                     <p style="font-size:12px">
                         ExForms add-in will help you send data from Excel to any Forms (a form can be any form: PDF Form, a Word Form, PowerPoint, more data destinations will be added in the future.)
@@ -112,7 +163,7 @@
                     <p style="font-size:14px">
                         <br>Go to your <a style="color:#2191f1" id="setofforms" href="javascript:void(0)"><b>Sets of Forms</b></a>
                     </p>
-                </div>
+                </div>-->
                 <h1 id="templateSets">Set of Forms</h1>
                 <div class="login-section">
                     <button class="ms-Button ms-Button--primary" style="margin-bottom:6px" id="btnInfoBack">
@@ -231,19 +282,19 @@
                             </div>
                         </form>
                         <!--<form method="post" action="/api/Template/UpdateExcelVersion" enctype="multipart/form-data" id="formUpload" class="ms-TextField">
-                            <div class="ms-TextField">
-                                <label class="ms-Label" for="files">Browse Excel for Version Update:</label>
-                                <input class="ms-TextField-field" style="height:40px;" type="file" id="excelVersionFile" name="excelVersionnFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-                            </div>
-                        </form>-->
+                    <div class="ms-TextField">
+                        <label class="ms-Label" for="files">Browse Excel for Version Update:</label>
+                        <input class="ms-TextField-field" style="height:40px;" type="file" id="excelVersionFile" name="excelVersionnFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                    </div>
+                </form>-->
                     </div>
                     <div style="float:right">
-                        <button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto" id="btnUpdateVersion">
-                            <span class="ms-Button-label">Update Version</span>
-                        </button>
-                        <button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto;display:none" id="btnUpdatingVersion">
-                            <span class="ms-Button-label">Please Wait...</span>
-                        </button>
+                        <!--<button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto" id="btnUpdateVersion" title="Update current version of your Excel">
+                    <span class="ms-Button-label">Update Excel Version</span>
+                </button>
+                <button class="ms-Button ms-Button--primary" style="margin-left:6px;height:auto;display:none" id="btnUpdatingVersion">
+                    <span class="ms-Button-label">Please Wait...</span>
+                </button>-->
                         <button class="ms-Button ms-Button--primary" style="margin-top:4px;margin-bottom:4px;height:auto" id="btnSaveExistingSet">
                             <span class="ms-Button-label">Save</span>
                         </button>
@@ -267,13 +318,13 @@
                                     "<span class='glyphicon glyphicon-align-justify text-danger'>&nbsp;Dynamic Section(UnMapped)</span>&nbsp;&nbsp;" +
                                     "<span class='glyphicon glyphicon-duplicate text-success'>&nbsp;Dynamic Field(Mapped)</span>&nbsp;&nbsp;" +
                                     "<span class='glyphicon glyphicon-duplicate text-danger'>&nbsp;Dynamic Field(UnMapped)</span>" +
-                                    "<br/> <br/> <a style='color:#2191f1' href='http://exceltoforms.com' target='_blank'>Learn more.</a> "+
+                                    "<br/> <br/> <a style='color:#2191f1' href='http://exceltoforms.com' target='_blank'>Learn more.</a> " +
                                     "</div>",
                                 html: true, placement: "left"
                             });
                         });
                     </script>
-                    <div  style="margin-top:10px;float:right">
+                    <div style="margin-top:10px;float:right">
                         <span class="btncalloutmapping" style="background:#000;padding:2px 6px;border-radius:50px;color:#fff;font-weight:700;cursor: help;">?</span>
                     </div>
                     <div style="float:left">
@@ -292,13 +343,13 @@
 
 
                         <!--<div id="divLegend" style="margin-top:10px;margin-bottom:10px">
-            &nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-file text-success">&nbsp;Static Field(Mapped)</span>&nbsp;&nbsp;
-            <span class="glyphicon glyphicon-file text-danger">&nbsp;Static Field(UnMapped)</span>&nbsp;&nbsp;
-            <span class="glyphicon glyphicon-align-justify text-success">&nbsp;Dynamic Field(Mapped)</span>&nbsp;&nbsp;
-            <span class="glyphicon glyphicon-align-justify text-danger">&nbsp;Dynamic Field(UnMapped)</span>&nbsp;&nbsp;
-            <span class="glyphicon glyphicon-duplicate text-success">&nbsp;Dynamic Element(Mapped)</span>&nbsp;&nbsp;
-            <span class="glyphicon glyphicon-duplicate text-danger">&nbsp;Dynamic Element(UnMapped)</span>
-        </div>-->
+                    &nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-file text-success">&nbsp;Static Field(Mapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-file text-danger">&nbsp;Static Field(UnMapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-align-justify text-success">&nbsp;Dynamic Field(Mapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-align-justify text-danger">&nbsp;Dynamic Field(UnMapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-duplicate text-success">&nbsp;Dynamic Element(Mapped)</span>&nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-duplicate text-danger">&nbsp;Dynamic Element(UnMapped)</span>
+                </div>-->
                         <div id="editdata" style="margin-top:4px;margin-bottom:10px" class="demo"></div>
                     </div>
                 </div>
@@ -331,9 +382,9 @@
                                 <input class="ms-TextField-field" style="height:40px;" type="file" id="files" name="files" multiple accept="application/pdf" />
                             </div>
                             <!--<div class="ms-TextField">
-                                <label class="ms-Label" for="files">Browse Excel Template[MAX 16MB]:</label>
-                                <input class="ms-TextField-field" style="height:40px;" type="file" id="excelFile" name="excelFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-                            </div>-->
+                        <label class="ms-Label" for="files">Browse Excel Template[MAX 16MB]:</label>
+                        <input class="ms-TextField-field" style="height:40px;" type="file" id="excelFile" name="excelFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                    </div>-->
                         </form>
 
                         <div id="divFile" style="width:100%">
@@ -386,7 +437,7 @@
                                 <div style="overflow-y:auto">
                                     <select id="fields" class="ms-TextField-field" multiple size="6">
                                         <!--<option value="ID">ID</option>
-                                        <option value="OriginalFileName">OriginalFileName</option>-->
+                                <option value="OriginalFileName">OriginalFileName</option>-->
                                     </select>
                                 </div>
                                 <button class="ms-Button ms-Button--primary" style="height:auto;margin-top:4px; width:100%; margin-left:0px;" id="btnMoveUp">
@@ -453,14 +504,14 @@
                             <label class="ms-Label">Parent Fields:<span style="color:red">*</span></label>
                             <select id="parent" class="ms-TextField-field" style="width:100%">
                                 <!--<option value="Select">Select</option>
-                                <option value="ID">ID</option>-->
+                        <option value="ID">ID</option>-->
                             </select>
                         </p>
                         <p>
                             <label class="ms-Label">Child Fields:<span style="color:red">*</span></label>
                             <select id="child" class="ms-TextField-field" style="width:100%">
                                 <!--<option value="Select">Select</option>
-                                <option value="ID">ID</option>-->
+                        <option value="ID">ID</option>-->
                             </select>
                         </p>
                     </div>

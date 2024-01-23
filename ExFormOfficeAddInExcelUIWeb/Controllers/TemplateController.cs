@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
+using System.Web.UI.WebControls;
 using System.Xml;
 using System.Xml.Linq;
 using AsposePdf = Aspose.Pdf;
@@ -136,6 +137,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     TemplateName = pdfTemplate.TemplateName,
                     Description = pdfTemplate.Description,
                     CompanyId = pdfTemplate.CompanyId,
+                    TeamId = pdfTemplate.TeamId,
                     TemplateFileZip = new MemoryStream().ToArray(),
                     IsActive = pdfTemplate.IsActive,
                     CreatedOn = DateTime.Now,
@@ -244,6 +246,9 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                                 break;
                             case "CompanyId":
                                 pdfTemplateSet.CompanyId = Convert.ToInt32(httpContext.Request[key]);
+                                break;
+                            case "TeamId":
+                                pdfTemplateSet.TeamId = Convert.ToInt32(httpContext.Request[key]);
                                 break;
                             case "TemplateFileZip":
                                 pdfTemplateSet.TemplateFileZip = new MemoryStream().ToArray();
@@ -919,6 +924,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             var fileNamePart = string.Empty;
             var deletedTemplateFileIds = string.Empty;
             var updatedBy = 0;
+            bool isDynamicFileUploaded = false;
 
             try
             {
@@ -966,7 +972,11 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                             AsposePdf.Document pdfDocument = new AsposePdf.Document(httpPostedFile.InputStream);
 
                             if (pdfDocument.Form.Type == AsposePdf.Forms.FormType.Dynamic)
+                            {
                                 pdfFile.IsXFA = true;
+                                isDynamicFileUploaded = true;
+                                continue;
+                            }
 
                             pdfFile.Folder = httpPostedFile.FileName;
                             pdfFile.FileName = httpPostedFile.FileName.Substring(httpPostedFile.FileName.LastIndexOf("\\") + 1);
@@ -1072,6 +1082,10 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             catch (Exception ex)
             {
                 return ex.Message;
+            }
+            if(isDynamicFileUploaded)
+            {
+                return "success with warning";
             }
             return "success";
         }
@@ -1299,14 +1313,41 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
         }
 
         [Route("api/Template/AutoMapFields")]
-        [HttpPost()]
-        public DataTable AutoMapFields([FromBody] int templateId)
+        [HttpGet()]
+        public DataTable AutoMapFields(int templateId, int templateFileId = 0)
         {
             var templateFields = new DataTable();
             try
             {
-                Helper.RemoveAllMappedFields(templateId);
+                if(templateFileId <= 0)
+                {
+                    Helper.RemoveAllMappedFields(templateId);
+                }
+                
                 templateFields = Helper.GetTemplateFieldsByTemplateId(templateId);
+                return templateFields;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+        }
+
+        [Route("api/Template/SyncMappedFields")]
+        [HttpGet()]
+        public DataTable SyncMappedFields(int templateId)
+        {
+            var templateFields = new DataTable();
+            try
+            {    
+                templateFields = Helper.GetTemplateFieldsByTemplateId(templateId);
+
+                var rows = templateFields.Select("IsMapped= " + false);
+                foreach (var row in rows)
+                { row.Delete(); }
+                templateFields.AcceptChanges();
+
                 return templateFields;
             }
             catch (Exception ex)
@@ -1790,7 +1831,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                                                 if (!File.Exists(filePath))
                                                 {
                                                     File.Copy(pdfFilePath, filePath);
-                                                    templateZip.AddFile(filePath, clientDirectory);
+                                                    templateZip.AddFile(filePath, outputSubFolder);
                                                 }
                                             }
                                             catch (PathTooLongException)
@@ -1928,7 +1969,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                                         if (!File.Exists(filePath))
                                         {
                                             File.Copy(pdfFilePath, filePath);
-                                            templateZip.AddFile(filePath, clientDirectory);
+                                            templateZip.AddFile(filePath, outputSubFolder);
                                         }
                                     }
                                     catch (PathTooLongException)
@@ -2064,7 +2105,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                                     if (!File.Exists(filePath))
                                     {
                                         File.Copy(pdfFilePath, filePath);
-                                        templateZip.AddFile(filePath, clientDirectory);
+                                        templateZip.AddFile(filePath, outputSubFolder);
                                     }
                                 }
                                 catch (PathTooLongException)
@@ -2497,6 +2538,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
         {
             dtEditTemplate.Columns.Add("TemplateId", typeof(int));
             dtEditTemplate.Columns.Add("CompanyId", typeof(int));
+            dtEditTemplate.Columns.Add("TeamId", typeof(int));
             dtEditTemplate.Columns.Add("TemplateName", typeof(string));
             dtEditTemplate.Columns.Add("Description", typeof(string));
             dtEditTemplate.Columns.Add("TemplateFileZip", typeof(byte[]));
