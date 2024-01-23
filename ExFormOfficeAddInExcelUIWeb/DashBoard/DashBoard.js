@@ -38,6 +38,8 @@ var teamId = "0";
             $("#loggingout").hide();
             $("#accordion").accordion();
 
+            bindAccountDropdown();
+
             if (IsAdmin() || IsSuperAdmin()) {
                 $("#divEditSet").show();
             }
@@ -1163,10 +1165,59 @@ var teamId = "0";
         });
     };
 
+    $("#dd_account").change(function () {        
+        bindTeamDropdown($("#dd_account").val());
+    });
     $("#dd_team").change(function () {
         teamId = $('option:selected', this).id;
-        alert(teamId + " " + $('option:selected', this).text());
+        console.log(teamId + " " + $('option:selected', this).text());
     });
+
+    function bindAccountDropdown() {
+
+        $.ajax({
+            url: "/api/GetAccountByUserId",
+            type: 'Get',
+            data: {
+                UserId: localStorage.getItem("UserID")
+            },
+            contentType: 'application/json;charset=utf-8'
+        }).done(function (res) {
+            $.each(res, function (index, data) {
+                $("#dd_account").append($("<option></option>").val(data.value).html(data.key));
+            });
+            
+        }).fail(function (status) {
+            app.showNotification('Error', 'Could not communicate with the server.');
+        });
+    }
+    function bindTeamDropdown(companyId) {
+
+        $.ajax({
+            url: "/api/GetTeamByAccount",
+            type: 'Get',
+            data: {
+                UserId: localStorage.getItem("UserID"),
+                CompanyId: companyId
+            },
+            contentType: 'application/json;charset=utf-8'
+        }).done(function (res) {
+            if (res) {
+                if (res.length == 1) {
+                    /*teamId = res[0].value;*/
+                    $("#dd_team").append($("<option selected></option>").val(res[0].value).html(res[0].key));
+                }
+                else if (res.length > 1) {
+                    $.each(res, function (index, data) {
+                        $("#dd_team").append($("<option></option>").val(data.value).html(data.key));
+                    });
+                    $("#divTeam").show();
+                }
+            }            
+        }).fail(function (status) {
+            app.showNotification('Error', 'Could not communicate with the server.');
+        });
+    }
 
     function getDocumentAsCompressed(formData) {
         Office.context.document.getFileAsync(Office.FileType.Compressed, { sliceSize: 65536 /*64 KB*/ },
@@ -3297,7 +3348,7 @@ var teamId = "0";
                 TemplateName: templateName,
                 Description: description,
                 CompanyId: parseInt(localStorage.getItem("CompanyID")),
-                TeamId: teamId,
+                TeamId: parseInt(teamId),
                 TemplateFileZip: null,
                 IsActive: true,
                 CreatedOn: new Date(),
