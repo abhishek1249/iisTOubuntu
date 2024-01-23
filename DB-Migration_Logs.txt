@@ -13,4 +13,17 @@ File Directoly in Archive Folder ===============>
 
 Need to make change in SendDataToTemplateSet Method 
 Change Needs to be done ====> templateZip.AddFile(filePath, clientDirectory); Rplace clientDirectory with blank ""
-on line No - 1793, 1931, 2067
+
+
+Procedures Need to be Update For Teams
+
+1) usp_CreateTemplateCopy -- Done
+2) usp_CreateTemplateFolder -- Done
+3) usp_CreateTemplateSet -- Done
+4) usp_GetTemplate --- Not used in the code
+5) usp_GetTemplateByCompanyId --- Not used In the code
+6) usp_GetTemplateFolderByCompanyId -- Done
+7) usp_UpdateTemplate -- Need to make chage at code level and send data at json level as param --- Done
+8) usp_UpdateTemplateSet -- Need to make chage at code level and send data at json level as param --- Done
+9) usp_CreateTemplateSet -- Done
+
