@@ -16,6 +16,8 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             public string UserID { get; set; }
             public string CompanyID { get; set; }
             public string CompanyName { get; set; }
+            public string UserName { get; set; }
+            public string FullName { get; set; }
             public char UserType { get; set; }
         }
 
@@ -47,7 +49,9 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                             CompanyID = Convert.ToString(obju.CompanyId),
                             UserID = Convert.ToString(obju.UserId),
                             UserType = obju.UserType,
-                            CompanyName = obju.CompanyName
+                            CompanyName = obju.CompanyName,
+                            UserName = obju.UserName,
+                            FullName = obju.FullName
                         };
                     }
                     else
@@ -112,7 +116,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
         {
             var userName = UName.Trim();
             var password = Upassword.Trim();
-            var account = Uaccount.Trim();
+            //var account = Uaccount.Trim();
             var smslabel = "";
 
             if (string.IsNullOrWhiteSpace(userName))
@@ -131,14 +135,14 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             {
                 smslabel = "Password should not exceed 50 characters.";
             }
-            else if (string.IsNullOrWhiteSpace(account))
-            {
-                smslabel = "Please enter user account.";
-            }
-            else if (account.Length > 50)
-            {
-                smslabel = "Account name should not exceed 150 characters.";
-            }
+            //else if (string.IsNullOrWhiteSpace(account))
+            //{
+            //    smslabel = "Please enter user account.";
+            //}
+            //else if (account.Length > 50)
+            //{
+            //    smslabel = "Account name should not exceed 150 characters.";
+            //}
             return smslabel;
         }
     }

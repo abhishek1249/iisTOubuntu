@@ -23,7 +23,7 @@ var excludeFiles = '';
 var rootNodeText = '';
 var excelVersion = '';
 var isNamingOptionsModified = false;
-var msgSignInError = 'Please sign-in to access all the features';,
+var msgSignInError = 'Please sign-in to access all the features';
 var teamId = "0";
 
 (function () {
@@ -1846,7 +1846,7 @@ var teamId = "0";
         return newArray;
     }
 
-    function SyncMappedFields() {          
+    function SyncMappedFields() {
 
         if (templateId > 0) {
 
@@ -1865,7 +1865,7 @@ var teamId = "0";
                     var dynamicFieldIds = [];
                     var dtParentFields = [];
                     var parentTableColumnNames = [];
-                    parentTableColumnNames.push("ID");                   
+                    parentTableColumnNames.push("ID");
 
                     $.each(res, function (index, obj) {
 
@@ -1992,7 +1992,7 @@ var teamId = "0";
                                     ChildFields: dtChildFields,
                                     DynamicFieldIds: dynamicFieldIds,
                                     TemplateId: templateId
-                                };                                
+                                };
 
                             });
                     }).catch(errorHandlerFunction);
@@ -2021,7 +2021,7 @@ var teamId = "0";
                 arrFileMap.push(currentTemplateFileId);
             }
             fileId = currentTemplateFileId;
-        }        
+        }
 
         if (templateId > 0) {
 
@@ -2044,12 +2044,12 @@ var teamId = "0";
                     var parentTableColumnNames = [];
                     parentTableColumnNames.push("ID");
 
-                    if (arrFileMap.length > 0) {                        
+                    if (arrFileMap.length > 0) {
                         res = res.filter(function (item) {
                             return arrFileMap.indexOf(item.TemplateFileId) > -1;
                         });
                     }
-                 
+
                     $.each(res, function (index, obj) {
 
                         var templateFileMappingId = obj.TemplateFileMappingId;
@@ -2090,7 +2090,7 @@ var teamId = "0";
                         }
 
                     });
-                    
+
                     Excel.run(function (context) {
                         var columnCount = parentTableColumnNames.length;
                         var colname = GetColumnName(columnCount);
@@ -2102,7 +2102,7 @@ var teamId = "0";
                         parentTable.load("name");
 
                         //Try start
-                        
+
                         //var colname = GetColumnName(parentTableColumnNames.length);
                         //var sheet = context.workbook.worksheets.getItem("sheet1");
                         //var parentTableExisting = sheet.tables.getItem("Table2");
@@ -2110,7 +2110,7 @@ var teamId = "0";
                         //var headerRange = parentTableExisting.getHeaderRowRange().load("values");
                         //var bodyRange = parentTableExisting.getDataBodyRange().load("values");
                         ////var arrExistingColCount = headerRange.load("values");
-                                               
+
                         //var columnCountStartTest = headerRange.values.length + 1;
                         //var colnameStartTest = GetColumnName(columnCountStartTest);
 
@@ -2121,12 +2121,12 @@ var teamId = "0";
 
                         //var parentTable = sheet.tables.add(range, true /*hasHeaders*/);
                         //parentTable.load("name");
-                      
+
                         //console.log(range);
                         //var columnCount = columnCountEndTest;
                         //console.log(columnCount);
                         //Try end
-                    
+
                         parentTableColumnNames = addNumbersToDuplicates(parentTableColumnNames);
                         parentTable.getHeaderRowRange().values = [parentTableColumnNames];
                         var childTables = [];
@@ -3177,7 +3177,7 @@ var teamId = "0";
                     localStorage.setItem("isTemplateSetEdited", true);
                     deletedFiles = [];
                     $("#newFiles").val('');
-                    EditSet(); 
+                    EditSet();
                     if (res === "success with warning") { app.showNotification('Error', 'Dynamic templates are not allowed'); }
                 }
                 else {
@@ -3242,11 +3242,11 @@ var teamId = "0";
             //table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
             //table_body += '</td>';
             table_body += '<td>';
-            if (isDemoSet) {                
-                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + " style='pointer-events: none'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";               
+            if (isDemoSet) {
+                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + " style='pointer-events: none'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
             }
             else {
-                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";               
+                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
             }
             table_body += '</td>';
             table_body += '<td>';

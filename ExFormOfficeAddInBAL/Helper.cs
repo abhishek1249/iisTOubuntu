@@ -103,7 +103,7 @@ namespace ExFormOfficeAddInBAL
             {
                 using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var mySqlComm = new MySqlCommand("usp_GetAccountsByUserId", conn))
+                    using (var mySqlComm = new MySqlCommand("usp_GetTeamsByAccount", conn))
                     {
                         mySqlComm.Parameters.AddWithValue("p_userId", userId);
                         mySqlComm.Parameters.AddWithValue("p_companyId", companyId);

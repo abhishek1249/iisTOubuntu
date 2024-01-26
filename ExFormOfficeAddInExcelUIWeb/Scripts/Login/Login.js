@@ -34,10 +34,10 @@
         $('#btnBack').click(RedirectToLandingPage);
     };
 
-    function LoginProcess() {        
+    function LoginProcess() {
         Excel.run(function (ctx) {
             return ctx.sync()
-                .then(function () {                    
+                .then(function () {
                     var dataToPassToService = {
                         UserName: $.trim($('#txtusername').val()),
                         Password: $.trim($('#txtpassword').val()),
@@ -59,8 +59,11 @@
                             contentType: 'application/json;charset=utf-8'
                         }).done(function (data) {
                             if (data.Status === "Success!") {
+                                console.log(data);
                                 localStorage.setItem("CompanyID", data.CompanyID);
                                 localStorage.setItem("UserID", data.UserID);
+                                localStorage.setItem("UserName", data.UserName);
+                                localStorage.setItem("FullName", data.FullName);
                                 localStorage.setItem("CompanyName", data.CompanyName);
                                 localStorage.setItem("UserType", data.UserType);
                                 window.location.href = '../DashBoard/DashBoard.html';
@@ -79,7 +82,7 @@
         }).catch(errorHandler);
 
     }
-    function validateUser(name, password,account) {
+    function validateUser(name, password, account) {
         if (name === '') {
             app.showNotification('Error', "Please enter user name.");
             $('#txtusername').focus();
@@ -112,7 +115,7 @@
         //}
         return true;
     }
-    
+
     function errorHandler(error) {
         showNotification("Error", error);
         console.log("Error: " + error);
@@ -129,7 +132,7 @@
         messageBanner.toggleExpansion();
     }
 
-    function RedirectToLandingPage() {       
+    function RedirectToLandingPage() {
         window.location.href = '../LandingPage/LandingPage.html';
     }
 })();
