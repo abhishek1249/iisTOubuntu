@@ -3102,6 +3102,7 @@ var treeData = [{}];
             formData.append('DeletedTemplateFileIds', jeditPdfTemplate.DeletedTemplateFileIds);
             formData.append('UpdatedBy', jeditPdfTemplate.UpdatedBy);
             formData.append('ExcludeFiles', excludeFiles);
+            formData.append('TeamId', teamId);
 
             $.ajax({
                 url: '/api/Template/UpdateTemplate',

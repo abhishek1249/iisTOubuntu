@@ -1080,7 +1080,12 @@ var teamId = "0";
                         //table_body += "<a class='fileAutoMap' id='-1'><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
                         //table_body += '</td>';
                         table_body += '<td>';
-                        table_body += "<a class='fileRemoveMap' id='-1'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+                       // if (isDemoSet) {
+                            table_body += "<span style='color: red'> Remove Map </span>";
+                       // }
+                        //else {
+                        //    table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+                        //}
                         table_body += '</td>';
 
                         table_body += '<td>';
@@ -1091,10 +1096,10 @@ var teamId = "0";
                         table_body += '</td>';
 
                         table_body += '<td>';
-                        table_body += "<a class='fileEdit' id='-1'><span style='color: red;cursor:pointer;'> Edit </span></a>";
+                        table_body += "<span style='color: red;pointer-events: none;'> Edit </span>";
                         table_body += '</td>';
                         table_body += '<td>';
-                        table_body += "<a class='fileDel' id='-1'><span style='color: red;cursor:pointer;'> Delete </span></a>";
+                        table_body += "<span style='color: red;pointer-events: none;'> Delete </span>";
                         table_body += '</td>';
                         table_body += '<td style="display: none;">';
                         table_body += "false";
@@ -3242,12 +3247,12 @@ var teamId = "0";
             //table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
             //table_body += '</td>';
             table_body += '<td>';
-            if (isDemoSet) {
-                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + " style='pointer-events: none'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
-            }
-            else {
-                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
-            }
+           // if (isDemoSet) {
+            table_body += "<span style='color: red;'> Remove Map </span>";
+          //  }
+           // else {
+           //     table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+           // }
             table_body += '</td>';
             table_body += '<td>';
             table_body += " " + data.Files[i].FileName;
@@ -3256,10 +3261,10 @@ var teamId = "0";
             table_body += " " + data.Files[i].MappedPercentage;
             table_body += '</td>';
             table_body += '<td>';
-            table_body += "<a class='fileEdit' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Edit </span></a>";
+            table_body += "<span style='color: red;pointer-events: none;'> Edit </span>";
             table_body += '</td>';
             table_body += '<td>';
-            table_body += "<a class='fileDel' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Delete </span></a>";
+            table_body += "<span style='color: red;pointer-events: none;'> Delete </span>";
             table_body += '</td>';
             table_body += '<td style="display: none;">';
             table_body += data.Files[i].IsXFA;

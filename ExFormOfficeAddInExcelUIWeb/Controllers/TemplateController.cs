@@ -1079,7 +1079,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     TemplateFileZip = templateMemoryStream.ToArray()
                 };
 
-                Helper.UpdateTemplate(editPdfTemplate, Convert.ToInt32(httpContext.Request["CreatedBy"]));
+                Helper.UpdateTemplate(editPdfTemplate, Convert.ToInt32(httpContext.Request["CreatedBy"]), Convert.ToInt32(httpContext.Request["TeamId"]));
             }
             catch (Exception ex)
             {

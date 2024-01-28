@@ -378,13 +378,13 @@ namespace ExFormOfficeAddInBAL
                 mySqlConnector.CloseConnection();
             }
         }
-        public static void UpdateTemplate(EditPdfTemplate editPdfTemplate, int userId)
+        public static void UpdateTemplate(EditPdfTemplate editPdfTemplate, int userId, int teamId)
         {
             MySqlConnector mySqlConnector = new MySqlConnector();
             var createdByuser = userId + "_" + Guid.NewGuid().ToString();
             try
             {
-                Populate_udt_template(editPdfTemplate.Template, createdByuser);
+                Populate_udt_template(editPdfTemplate.Template, createdByuser,teamId);
                 Populate_udt_TemplateFile(editPdfTemplate.TemplateFile, createdByuser);
                 Populate_udt_templatefilefieldmapping(editPdfTemplate.TemplateFileFieldMapping, createdByuser);
                 using (var conn = mySqlConnector.GetConnection())
@@ -1952,7 +1952,7 @@ namespace ExFormOfficeAddInBAL
 
         }
 
-        private static void Populate_udt_template(DataTable sourceTable, string createdByuser)
+        private static void Populate_udt_template(DataTable sourceTable, string createdByuser, int teamId)
         {
             MySqlConnector mySqlConnector = new MySqlConnector();
             try
@@ -1998,6 +1998,7 @@ namespace ExFormOfficeAddInBAL
                         sqlComm.Parameters.AddWithValue($"p_SubFolderName", row["SubFolderName"]);
                         sqlComm.Parameters.AddWithValue($"p_FileNamePart", row["FileNamePart"]);
                         sqlComm.Parameters.AddWithValue($"p_createByUser", createdByuser);
+                        sqlComm.Parameters.AddWithValue($"p_teamId", teamId);
 
                         sqlComm.ExecuteNonQuery();
                     }
