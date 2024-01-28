@@ -42,6 +42,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             var dtParentFields = new DataTable();
             dtParentFields.Clear();
             CreateParentFieldsDt(dtParentFields);
+            var httpContext = HttpContext.Current;
             try
             {
                 foreach (var field in fields.ParentFields)
@@ -90,7 +91,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     }
                 }
 
-                Helper.MapParentTableFields(dtParentFields);
+                Helper.MapParentTableFields(dtParentFields, Convert.ToInt32(httpContext.Request["CreatedBy"]));
             }
             catch (Exception ex)
             {
@@ -1078,7 +1079,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     TemplateFileZip = templateMemoryStream.ToArray()
                 };
 
-                Helper.UpdateTemplate(editPdfTemplate);
+                Helper.UpdateTemplate(editPdfTemplate, Convert.ToInt32(httpContext.Request["CreatedBy"]));
             }
             catch (Exception ex)
             {

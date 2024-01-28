@@ -303,7 +303,7 @@ namespace ExFormOfficeAddInBAL
             try
             {
                 Populate_udt_TemplateFile(pdfTemplate.TemplateFile, createdByuser);
-                Populate_udt_Populate_udt_TemplateFile(pdfTemplate.TemplateFileFieldMapping, createdByuser);
+                Populate_udt_templatefilefieldmapping(pdfTemplate.TemplateFileFieldMapping, createdByuser);
                 using (var conn = mySqlConnector.GetConnection())
                 {
                     using (var sqlCmd = new MySqlCommand("usp_CreateTemplateSet", conn))
@@ -341,10 +341,16 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.ExecuteNonQuery();
                         templateId = Convert.ToInt32(sqlCmd.Parameters["p_TemplateId"].Value);
                     }
-                }
+                }                
+            }
+            catch(Exception ex)
+            {
+
             }
             finally
             {
+                Delete_udt_TemplateFile(createdByuser);
+                Delete_udt_templatefilefieldmapping(createdByuser);
                 mySqlConnector.CloseConnection();
             }
             return templateId;
@@ -372,11 +378,15 @@ namespace ExFormOfficeAddInBAL
                 mySqlConnector.CloseConnection();
             }
         }
-        public static void UpdateTemplate(EditPdfTemplate editPdfTemplate)
+        public static void UpdateTemplate(EditPdfTemplate editPdfTemplate, int userId)
         {
             MySqlConnector mySqlConnector = new MySqlConnector();
+            var createdByuser = userId + "_" + Guid.NewGuid().ToString();
             try
             {
+                Populate_udt_template(editPdfTemplate.Template, createdByuser);
+                Populate_udt_TemplateFile(editPdfTemplate.TemplateFile, createdByuser);
+                Populate_udt_templatefilefieldmapping(editPdfTemplate.TemplateFileFieldMapping, createdByuser);
                 using (var conn = mySqlConnector.GetConnection())
                 {
                     using (var sqlCmd = new MySqlCommand("usp_UpdateTemplateSet", conn))
@@ -388,24 +398,33 @@ namespace ExFormOfficeAddInBAL
                         else
                             sqlCmd.Parameters.AddWithValue("p_UpdatedBy", DBNull.Value);
 
-                        sqlCmd.Parameters.Add("p_Template",MySqlDbType.JSON);
-                        sqlCmd.Parameters["p_Template"].Value = JsonConvert.SerializeObject(editPdfTemplate.Template);
+                        //sqlCmd.Parameters.Add("p_Template",MySqlDbType.JSON);
+                        //sqlCmd.Parameters["p_Template"].Value = JsonConvert.SerializeObject(editPdfTemplate.Template);
 
-                        sqlCmd.Parameters.Add("p_TemplateFile", MySqlDbType.JSON);
-                        sqlCmd.Parameters["p_TemplateFile"].Value = JsonConvert.SerializeObject(editPdfTemplate.TemplateFile);
+                        //sqlCmd.Parameters.Add("p_TemplateFile", MySqlDbType.JSON);
+                        //sqlCmd.Parameters["p_TemplateFile"].Value = JsonConvert.SerializeObject(editPdfTemplate.TemplateFile);
 
-                        sqlCmd.Parameters.Add("p_TemplateFileFieldMapping", MySqlDbType.JSON);
-                        sqlCmd.Parameters["p_TemplateFileFieldMapping"].Value = JsonConvert.SerializeObject(editPdfTemplate.TemplateFileFieldMapping);
+                        //sqlCmd.Parameters.Add("p_TemplateFileFieldMapping", MySqlDbType.JSON);
+                        //sqlCmd.Parameters["p_TemplateFileFieldMapping"].Value = JsonConvert.SerializeObject(editPdfTemplate.TemplateFileFieldMapping);
 
                         
                         sqlCmd.Parameters.AddWithValue("p_TemplateFileZip", editPdfTemplate.TemplateFileZip);
+                        sqlCmd.Parameters.AddWithValue("p_createByUser", createdByuser);
 
                         sqlCmd.ExecuteNonQuery();
                     }
                 }
+                
+            }
+            catch(Exception ex)
+            {
+
             }
             finally
             {
+                Delete_udt_template(createdByuser);
+                Delete_udt_TemplateFile(createdByuser);
+                Delete_udt_templatefilefieldmapping(createdByuser);
                 mySqlConnector.CloseConnection();
             }
         }
@@ -674,7 +693,10 @@ namespace ExFormOfficeAddInBAL
                     for (var i = 0; i < rowCount; i++)
                     {
                         var templateFile = new TemplateFile();
+                        
                         templateFile.TemplateFileId = Convert.ToInt32(rows[i]["TemplateFileId"]);
+                        
+                        
                         templateFile.MappedPercentage = GetTemplateFileFieldsMappedPercentage(templateFile.TemplateFileId);
                         templateFile.DynamicFieldsCount = GetDynamicFieldsCount(templateFile.TemplateFileId);
                         templateFile.FileName = Convert.ToString(rows[i]["FileName"]);
@@ -848,7 +870,7 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.CommandType = CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("p_TemplateFileId", templateFileId);
 
-                        sqlCmd.Parameters.Add("@Percentage", MySqlDbType.Float);
+                        sqlCmd.Parameters.Add("p_Percentage", MySqlDbType.Float);
                         sqlCmd.Parameters["p_Percentage"].Direction = ParameterDirection.Output;
                         sqlCmd.ExecuteNonQuery();
                         mappedPercentage = Convert.ToString(sqlCmd.Parameters["p_Percentage"].Value) + "%";
@@ -986,7 +1008,15 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.Parameters.Add("p_Count", MySqlDbType.Int32);
                         sqlCmd.Parameters["p_Count"].Direction = ParameterDirection.Output;
                         sqlCmd.ExecuteNonQuery();
-                        count = Convert.ToInt32(sqlCmd.Parameters["p_Count"].Value);
+                        if (string.IsNullOrEmpty(sqlCmd.Parameters["p_Count"].Value.ToString()))
+                        {
+                            count = 0;
+                        }
+                        else
+                        {
+                            count = Convert.ToInt32(sqlCmd.Parameters["p_Count"].Value);
+                        }
+                        
                     }
                 }
             }
@@ -1014,7 +1044,11 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.Parameters.Add("p_Count", MySqlDbType.Int32);
                         sqlCmd.Parameters["p_Count"].Direction = ParameterDirection.Output;
                         sqlCmd.ExecuteNonQuery();
-                        count = Convert.ToInt32(sqlCmd.Parameters["p_Count"].Value);
+                        if (!string.IsNullOrEmpty(sqlCmd.Parameters["p_Count"].Value.ToString()))
+                        {
+                            count = Convert.ToInt32(sqlCmd.Parameters["p_Count"].Value);
+                        }
+                        
                     }
                 }
             }
@@ -1044,6 +1078,10 @@ namespace ExFormOfficeAddInBAL
                         isMapped = Convert.ToBoolean(sqlCmd.Parameters["p_IsMapped"].Value);
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+
             }
             finally
             {
@@ -1102,25 +1140,32 @@ namespace ExFormOfficeAddInBAL
             }
             return dt;
         }
-        public static void MapParentTableFields(DataTable parentField)
+        public static void MapParentTableFields(DataTable parentField, int userId)
         {
             MySqlConnector mySqlConnector = new MySqlConnector();
-
+            var createdByuser = userId + "_" + Guid.NewGuid().ToString();
             try
             {
+                Populate_udt_parentfield(parentField, createdByuser);
                 using (var conn = mySqlConnector.GetConnection())
                 {
                     using (var sqlCmd = new MySqlCommand("usp_MapParentTableFields", conn))
                     {
                         sqlCmd.CommandType = CommandType.StoredProcedure;
-                        sqlCmd.Parameters.Add("p_ParentField", MySqlDbType.JSON);
-                        sqlCmd.Parameters["p_ParentField"].Value = JsonConvert.SerializeObject(parentField);
+                        sqlCmd.Parameters.AddWithValue($"p_createdByUser", createdByuser);
+                        //sqlCmd.Parameters.Add("p_ParentField", MySqlDbType.JSON);
+                        //sqlCmd.Parameters["p_ParentField"].Value = JsonConvert.SerializeObject(parentField);
                         sqlCmd.ExecuteNonQuery();
                     }
-                }
+                }                
+            }
+            catch(Exception ex)
+            {
+
             }
             finally
             {
+                Delete_udt_parentfield(createdByuser);
                 mySqlConnector.CloseConnection();
             }
         }
@@ -1181,6 +1226,10 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.ExecuteNonQuery();
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+
             }
             finally
             {
@@ -1243,6 +1292,10 @@ namespace ExFormOfficeAddInBAL
                     }
                 }
             }
+            catch(Exception ex)
+            {
+
+            }
             finally
             {
                 mySqlConnector.CloseConnection();
@@ -1279,7 +1332,8 @@ namespace ExFormOfficeAddInBAL
 
         public static DataTable GetSendDataParam(int templateId)
         {
-            var dt = new DataTable();
+            //var dt = new DataTable();
+            var ds = new DataSet();
             MySqlConnector mySqlConnector = new MySqlConnector();
             try
             {
@@ -1293,16 +1347,20 @@ namespace ExFormOfficeAddInBAL
                         using (var da = new MySqlDataAdapter())
                         {
                             da.SelectCommand = sqlCmd;
-                            da.Fill(dt);
+                            da.Fill(ds);
                         }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+
             }
             finally
             {
                 mySqlConnector.CloseConnection();
             }
-            return dt;
+            return ds.Tables[ds.Tables.Count - 1];
         }
         public static DataTable GetTableFields(int fileId, string tableName)
         {
@@ -1634,6 +1692,10 @@ namespace ExFormOfficeAddInBAL
                     }
                 }
             }
+            catch(Exception ex)
+            {
+
+            }
             finally
             {
                 mySqlConnector.CloseConnection();
@@ -1678,6 +1740,10 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.ExecuteNonQuery();
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+
             }
             finally
             {
@@ -1746,13 +1812,13 @@ namespace ExFormOfficeAddInBAL
             try
             {
                 foreach (DataRow row in sourceTable.Rows)
-                {
-                    using (var conn = mySqlConnector.GetConnection())
-                    {
-                        using (var sqlComm = new MySqlCommand("usp_Populate_udtTemplateFIle", conn))
+                {                    
+                    var conn = mySqlConnector.GetConnection();                    
+                        using (var sqlComm = new MySqlCommand("usp_Populate_udtTemplateFIleOffice", conn))
                         {
+                            sqlComm.CommandType = CommandType.StoredProcedure;
                             if (String.IsNullOrEmpty(row["TemplateFileId"].ToString())){
-                                sqlComm.Parameters.AddWithValue($"p_TemplateFileId", DBNull.Value);
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileId", null);
                             }
                             else
                             {
@@ -1761,22 +1827,24 @@ namespace ExFormOfficeAddInBAL
 
                             if (String.IsNullOrEmpty(row["TemplateId"].ToString()))
                             {
-                                sqlComm.Parameters.AddWithValue($"p_TemplateId", DBNull.Value);
+                                sqlComm.Parameters.AddWithValue($"p_TemplateId", null);
                             }
                             else
                             {
                                 sqlComm.Parameters.AddWithValue($"p_TemplateId", Convert.ToInt32(row["TemplateId"]));
                             }
 
-                            sqlComm.Parameters.AddWithValue($"p_TemplateId", row["TemplateId"]);
+                            
                             sqlComm.Parameters.AddWithValue($"p_FileName", row["FileName"]);
                             sqlComm.Parameters.AddWithValue($"p_FileDisplayName", row["FileDisplayName"]);
                             sqlComm.Parameters.AddWithValue($"p_FilePath", row["FilePath"]);
-                            sqlComm.Parameters.AddWithValue($"p_createByUser", createdByuser);
+                            sqlComm.Parameters.AddWithValue($"p_IsXFA", row["IsXFA"]);
+                            sqlComm.Parameters.AddWithValue($"p_PdfBytes", row["PdfBytes"]);
+                            sqlComm.Parameters.AddWithValue($"p_createdByUser", createdByuser);
 
                             sqlComm.ExecuteNonQuery();
                         }
-                    }
+                    mySqlConnector.CloseConnection();                    
                 }
             }
             catch(Exception ex)
@@ -1787,21 +1855,20 @@ namespace ExFormOfficeAddInBAL
             
         }
 
-        private static void Populate_udt_Populate_udt_TemplateFile(DataTable sourceTable, string createdByuser)
+        private static void Populate_udt_templatefilefieldmapping(DataTable sourceTable, string createdByuser)
         {
             MySqlConnector mySqlConnector = new MySqlConnector(); 
             try
             {
                 foreach (DataRow row in sourceTable.Rows)
-                {
-                    using (var conn = mySqlConnector.GetConnection())
-                    {
+                {                   
+                    var conn = mySqlConnector.GetConnection();                    
                         using (var sqlComm = new MySqlCommand("usp_Populate_udt_templatefilefieldmapping", conn))
                         {
-
+                            sqlComm.CommandType = CommandType.StoredProcedure;
                             if (String.IsNullOrEmpty(row["TemplateFileMappingId"].ToString()))
                             {
-                                sqlComm.Parameters.AddWithValue($"p_TemplateFileMappingId", DBNull.Value);
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileMappingId", null);
                             }
                             else
                             {
@@ -1810,7 +1877,7 @@ namespace ExFormOfficeAddInBAL
 
                             if (String.IsNullOrEmpty(row["TemplateId"].ToString()))
                             {
-                                sqlComm.Parameters.AddWithValue($"p_TemplateId", DBNull.Value);
+                                sqlComm.Parameters.AddWithValue($"p_TemplateId", null);
                             }
                             else
                             {
@@ -1819,16 +1886,14 @@ namespace ExFormOfficeAddInBAL
 
                             if (String.IsNullOrEmpty(row["TemplateFileId"].ToString()))
                             {
-                                sqlComm.Parameters.AddWithValue($"p_TemplateFileId", DBNull.Value);
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileId", null);
                             }
                             else
                             {
                                 sqlComm.Parameters.AddWithValue($"p_TemplateFileId", Convert.ToInt32(row["TemplateFileId"]));
                             }
 
-                            sqlComm.Parameters.AddWithValue("p_TemplateFileMappingId", row["TemplateFileMappingId"]);
-                            sqlComm.Parameters.AddWithValue("p_TemplateId", row["TemplateId"]);
-                            sqlComm.Parameters.AddWithValue("p_TemplateFileId", row["TemplateFileId"]);
+                          
                             sqlComm.Parameters.AddWithValue("p_PDFFieldName", row["PDFFieldName"]);
                             sqlComm.Parameters.AddWithValue("p_FilePath", row["FilePath"]);
                             sqlComm.Parameters.AddWithValue("p_IsMapped", row["IsMapped"]);
@@ -1839,10 +1904,147 @@ namespace ExFormOfficeAddInBAL
                             sqlComm.Parameters.AddWithValue("p_IsDynamic", row["IsDynamic"]);
                             sqlComm.Parameters.AddWithValue("p_HasChildFields", row["HasChildFields"]);
                             sqlComm.Parameters.AddWithValue("p_XPath", row["XPath"]);
-                            sqlComm.Parameters.AddWithValue("p_createByUser", createdByuser);
+                            sqlComm.Parameters.AddWithValue("p_createdByUser", createdByuser);
 
                             sqlComm.ExecuteNonQuery();
                         }
+                    mySqlConnector.CloseConnection();                   
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }          
+            
+
+        }
+
+        private static void Populate_udt_parentfield(DataTable sourceTable, string createdByuser)
+        {
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                foreach (DataRow row in sourceTable.Rows)
+                {                    
+                    var conn = mySqlConnector.GetConnection();                    
+                    using (var sqlComm = new MySqlCommand("usp_Populate_udt_parentfield", conn))
+                    {
+                        sqlComm.CommandType = CommandType.StoredProcedure;
+
+                        sqlComm.Parameters.AddWithValue($"p_TemplateFileMappingId", row["TemplateFileMappingId"]);
+                        sqlComm.Parameters.AddWithValue($"p_ExcelFieldName", row["ExcelFieldName"]);
+                        sqlComm.Parameters.AddWithValue($"p_SheetName", row["SheetName"]);
+                        sqlComm.Parameters.AddWithValue($"p_IsMapped", row["IsMapped"]);
+                        sqlComm.Parameters.AddWithValue($"p_ExcelTableName", row["ExcelTableName"]);
+                        sqlComm.Parameters.AddWithValue($"p_XPath", row["XPath"]);
+                        sqlComm.Parameters.AddWithValue($"p_createdByUser", createdByuser);
+
+                        sqlComm.ExecuteNonQuery();
+                    }
+                    mySqlConnector.CloseConnection();                    
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
+        }
+
+        private static void Populate_udt_template(DataTable sourceTable, string createdByuser)
+        {
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                foreach (DataRow row in sourceTable.Rows)
+                {
+                    var conn = mySqlConnector.GetConnection();
+                    using (var sqlComm = new MySqlCommand("usp_Populate_udt_template", conn))
+                    {
+                        sqlComm.CommandType = CommandType.StoredProcedure;
+                        if (String.IsNullOrEmpty(row["TemplateId"].ToString()))
+                        {
+                            sqlComm.Parameters.AddWithValue($"p_TemplateId", null);
+                        }
+                        else
+                        {
+                            sqlComm.Parameters.AddWithValue($"p_TemplateId", Convert.ToInt32(row["TemplateId"]));
+                        }
+
+                        if (String.IsNullOrEmpty(row["CompanyId"].ToString()))
+                        {
+                            sqlComm.Parameters.AddWithValue($"p_CompanyId", null);
+                        }
+                        else
+                        {
+                            sqlComm.Parameters.AddWithValue($"p_CompanyId", Convert.ToInt32(row["CompanyId"]));
+                        }
+
+                        sqlComm.Parameters.AddWithValue($"p_TemplateName", row["TemplateName"]);
+                        sqlComm.Parameters.AddWithValue($"p_Description", row["Description"]);
+                        if (String.IsNullOrEmpty(row["IsActive"].ToString()))
+                        {
+                            sqlComm.Parameters.AddWithValue($"p_IsActive", null);
+                        }
+                        else
+                        {
+                            sqlComm.Parameters.AddWithValue($"p_IsActive", Convert.ToBoolean(row["IsActive"]));
+                        }
+                        sqlComm.Parameters.AddWithValue($"p_CreatedOn", row["CreatedOn"]);
+                        sqlComm.Parameters.AddWithValue($"p_CreatedBy", row["CreatedBy"]);
+                        sqlComm.Parameters.AddWithValue($"p_UpdatedOn", row["UpdatedOn"]);
+                        sqlComm.Parameters.AddWithValue($"p_UpdatedBy", row["UpdatedBy"]);
+                        sqlComm.Parameters.AddWithValue($"p_SubFolderName", row["SubFolderName"]);
+                        sqlComm.Parameters.AddWithValue($"p_FileNamePart", row["FileNamePart"]);
+                        sqlComm.Parameters.AddWithValue($"p_createByUser", createdByuser);
+
+                        sqlComm.ExecuteNonQuery();
+                    }
+                    mySqlConnector.CloseConnection();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
+        }
+
+        private static void Delete_udt_TemplateFile(string createdByuser)
+        {
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                using (var conn = mySqlConnector.GetConnection())
+                {
+                    using (var sqlComm = new MySqlCommand("usp_Delete_udtTemplateFIle", conn))
+                    {
+                        sqlComm.CommandType = CommandType.StoredProcedure;
+                        sqlComm.Parameters.AddWithValue($"p_createdByUser", createdByuser);
+                        sqlComm.ExecuteNonQuery();
+                    }
+                } 
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private static void Delete_udt_templatefilefieldmapping(string createdByuser)
+        {
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                using (var conn = mySqlConnector.GetConnection())
+                {
+                    using (var sqlComm = new MySqlCommand("usp_Delete_udt_templatefilefieldmapping", conn))
+                    {
+                        sqlComm.CommandType = CommandType.StoredProcedure;
+                        sqlComm.Parameters.AddWithValue($"p_createdByUser", createdByuser);
+                        sqlComm.ExecuteNonQuery();
                     }
                 }
             }
@@ -1850,9 +2052,49 @@ namespace ExFormOfficeAddInBAL
             {
 
             }
-            
-
         }
+
+        private static void Delete_udt_parentfield(string createdByuser)
+        {
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                using (var conn = mySqlConnector.GetConnection())
+                {
+                    using (var sqlComm = new MySqlCommand("usp_Delete_udt_parentfield", conn))
+                    {
+                        sqlComm.Parameters.AddWithValue($"p_createdByUser", createdByuser);
+                        sqlComm.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private static void Delete_udt_template(string createdByuser)
+        {
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                using (var conn = mySqlConnector.GetConnection())
+                {
+                    using (var sqlComm = new MySqlCommand("usp_Delete_udt_template", conn))
+                    {
+                        sqlComm.CommandType = CommandType.StoredProcedure;
+                        sqlComm.Parameters.AddWithValue($"p_createdByUser", createdByuser);
+                        sqlComm.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
         #endregion
 
     }
