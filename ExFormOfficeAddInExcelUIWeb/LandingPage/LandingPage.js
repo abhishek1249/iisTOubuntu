@@ -23,7 +23,7 @@ var excludeFiles = '';
 var rootNodeText = '';
 var excelVersion = '';
 var isNamingOptionsModified = false;
-var msgSignInError = 'Please sign-in to access all the features';,
+var msgSignInError = 'Please sign-in to access all the features';
 var teamId = "0";
 
 (function () {
@@ -125,13 +125,13 @@ var teamId = "0";
                 localStorage.setItem("isSaved", false);
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });
             }
             if (localStorage.getItem("isTemplateSetEdited") === "true") {
                 localStorage.setItem("isTemplateSetEdited", false);
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });
             }
             $('#data').jstree({
                 'core': {
@@ -231,7 +231,7 @@ var teamId = "0";
                             $('#btnUpload').hide();
                             $('#templateSets').hide();
                             $('#newSet').show();
-                            $("#accordion").accordion({ active: 5 });
+                            $("#accordion").accordion({ active: 4 });
                         }
                     },
                     "DeleteFolder": {
@@ -303,7 +303,7 @@ var teamId = "0";
                                                         $('#divDownloadExcelNote').hide();
                                                         $('#templateSets').hide();
                                                         $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
+                                                        $("#accordion").accordion({ active: 1 });
                                                         //app.showNotification('Message', 'saved customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                                     }
                                                     else {
@@ -315,7 +315,7 @@ var teamId = "0";
                                                         $('#divDownloadExcelNote').show();
                                                         $('#templateSets').hide();
                                                         $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
+                                                        $("#accordion").accordion({ active: 1 });
                                                         //app.showNotification('Message', 'save customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                                     }
                                                 }).fail(function (status) {
@@ -339,7 +339,7 @@ var teamId = "0";
                                                         $('#divDownloadExcelNote').hide();
                                                         $('#templateSets').hide();
                                                         $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
+                                                        $("#accordion").accordion({ active: 1 });
                                                         //app.showNotification('Message', 'excel customxmlid=' + xmlpart.id);
                                                     } else {
                                                         app.showNotification('Error', res.Error);
@@ -366,7 +366,7 @@ var teamId = "0";
                                                         $('#divDownloadExcelNote').hide();
                                                         $('#templateSets').hide();
                                                         $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
+                                                        $("#accordion").accordion({ active: 1 });
                                                         //app.showNotification('Message', 'excel customxmlid=undefined');
                                                     } else {
                                                         app.showNotification('Error', res.Error);
@@ -526,7 +526,7 @@ var teamId = "0";
             function SetOfForms() {
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });
             }
 
             function GetMappedPercentage(fileId) {
@@ -542,7 +542,7 @@ var teamId = "0";
             function BackToInfo() {
                 $('#info').show();
                 $('#templateSets').hide();
-                $("#accordion").accordion({ active: 0 });
+                $("#accordion").accordion({ active: -1 });
             }
 
             function BackToSet() {
@@ -552,7 +552,7 @@ var teamId = "0";
                     $('#selectedSet').hide();
                     $('#newSet').hide();
                     $('#templateSets').show();
-                    $("#accordion").accordion({ active: 1 });
+                    $("#accordion").accordion({ active: 0 });
                 }
             }
 
@@ -587,7 +587,7 @@ var teamId = "0";
                                         $('#divDownloadExcel').hide();
                                         $('#editSet').hide();
                                         $('#selectedSet').show();
-                                        $("#accordion").accordion({ active: 2 });
+                                        $("#accordion").accordion({ active: 1 });
                                     }
                                     else {
                                         isExcelVersioMatching = false;
@@ -596,7 +596,7 @@ var teamId = "0";
                                         $('#divDownloadExcel').show();
                                         $('#editSet').hide();
                                         $('#selectedSet').show();
-                                        $("#accordion").accordion({ active: 2 });
+                                        $("#accordion").accordion({ active: 1 });
                                     }
                                 }).fail(function (status) {
                                     app.showNotification('Error', 'Could not communicate with the server.');
@@ -604,7 +604,7 @@ var teamId = "0";
                             } else {
                                 $('#editSet').hide();
                                 $('#selectedSet').show();
-                                $("#accordion").accordion({ active: 2 });
+                                $("#accordion").accordion({ active: 1 });
                             }
                         });
                 });
@@ -736,7 +736,7 @@ var teamId = "0";
                                 $('#defaults').hide();
                                 $('#editFieldsMapping').hide();
                                 $('#editSet').show();
-                                $("#accordion").accordion({ active: 3 });
+                                $("#accordion").accordion({ active: 2 });
                             }).fail(function (status) {
                                 app.showNotification('Error', 'Could not communicate with the server.');
                             }).always(function () {
@@ -747,7 +747,7 @@ var teamId = "0";
                             $('#defaults').hide();
                             $('#editFieldsMapping').hide();
                             $('#editSet').show();
-                            $("#accordion").accordion({ active: 3 });
+                            $("#accordion").accordion({ active: 2 });
                         }
                     },
                     Cancel: function () {
@@ -965,7 +965,7 @@ var teamId = "0";
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });
                                             //app.showNotification('Message', 'saved customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                         }
                                         else {
@@ -977,7 +977,7 @@ var teamId = "0";
                                             $('#divDownloadExcelNote').show();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });
                                             //app.showNotification('Message', 'save customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                         }
                                     }).fail(function (status) {
@@ -1001,7 +1001,7 @@ var teamId = "0";
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });
                                             //app.showNotification('Message', 'excel customxmlid=' + xmlpart.id);
                                         } else {
                                             app.showNotification('Error', res.Error);
@@ -1028,7 +1028,7 @@ var teamId = "0";
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });
                                             //app.showNotification('Message', 'excel customxmlid=undefined');
                                         } else {
                                             app.showNotification('Error', res.Error);
@@ -1244,7 +1244,7 @@ var teamId = "0";
                 }
                 $('#editSet').hide();
                 $('#defaults').show();
-                $("#accordion").accordion({ active: 6 });
+                $("#accordion").accordion({ active: 5 });
             }
         }).fail(function (status) {
             app.showNotification('Error', status.responseText);
@@ -1255,7 +1255,7 @@ var teamId = "0";
         $('#defaults').hide();
         $('#editFieldsMapping').hide();
         $('#editSet').show();
-        $("#accordion").accordion({ active: 3 });
+        $("#accordion").accordion({ active: 2 });
     }
 
     function SendDataToTemplateSet() {
@@ -1681,7 +1681,7 @@ var teamId = "0";
     function BackToEditFieldsMapping() {
         $('#ParentChildTable').hide();
         $('#editFieldsMapping').show();
-        $("#accordion").accordion({ active: 4 });
+        $("#accordion").accordion({ active: 3 });
     }
 
     function BackToTableRelationship() {
@@ -1705,7 +1705,7 @@ var teamId = "0";
                     });
                     $('#ParentChildTableRelationship').hide();
                     $('#ParentChildTable').show();
-                    $("#accordion").accordion({ active: 7 });
+                    $("#accordion").accordion({ active: 6 });
                 } else {
                     app.showNotification('Message', 'No parent and child table found for the file.');
                 }
@@ -1717,7 +1717,7 @@ var teamId = "0";
         } else {
             $('#ParentChildTableRelationship').hide();
             $('#ParentChildTable').show();
-            $("#accordion").accordion({ active: 7 });
+            $("#accordion").accordion({ active: 6 });
         }
     }
 
@@ -1846,7 +1846,7 @@ var teamId = "0";
         return newArray;
     }
 
-    function SyncMappedFields() {          
+    function SyncMappedFields() {
 
         if (templateId > 0) {
 
@@ -1865,7 +1865,7 @@ var teamId = "0";
                     var dynamicFieldIds = [];
                     var dtParentFields = [];
                     var parentTableColumnNames = [];
-                    parentTableColumnNames.push("ID");                   
+                    parentTableColumnNames.push("ID");
 
                     $.each(res, function (index, obj) {
 
@@ -1992,7 +1992,7 @@ var teamId = "0";
                                     ChildFields: dtChildFields,
                                     DynamicFieldIds: dynamicFieldIds,
                                     TemplateId: templateId
-                                };                                
+                                };
 
                             });
                     }).catch(errorHandlerFunction);
@@ -2021,7 +2021,7 @@ var teamId = "0";
                 arrFileMap.push(currentTemplateFileId);
             }
             fileId = currentTemplateFileId;
-        }        
+        }
 
         if (templateId > 0) {
 
@@ -2044,12 +2044,12 @@ var teamId = "0";
                     var parentTableColumnNames = [];
                     parentTableColumnNames.push("ID");
 
-                    if (arrFileMap.length > 0) {                        
+                    if (arrFileMap.length > 0) {
                         res = res.filter(function (item) {
                             return arrFileMap.indexOf(item.TemplateFileId) > -1;
                         });
                     }
-                 
+
                     $.each(res, function (index, obj) {
 
                         var templateFileMappingId = obj.TemplateFileMappingId;
@@ -2090,7 +2090,7 @@ var teamId = "0";
                         }
 
                     });
-                    
+
                     Excel.run(function (context) {
                         var columnCount = parentTableColumnNames.length;
                         var colname = GetColumnName(columnCount);
@@ -2102,7 +2102,7 @@ var teamId = "0";
                         parentTable.load("name");
 
                         //Try start
-                        
+
                         //var colname = GetColumnName(parentTableColumnNames.length);
                         //var sheet = context.workbook.worksheets.getItem("sheet1");
                         //var parentTableExisting = sheet.tables.getItem("Table2");
@@ -2110,7 +2110,7 @@ var teamId = "0";
                         //var headerRange = parentTableExisting.getHeaderRowRange().load("values");
                         //var bodyRange = parentTableExisting.getDataBodyRange().load("values");
                         ////var arrExistingColCount = headerRange.load("values");
-                                               
+
                         //var columnCountStartTest = headerRange.values.length + 1;
                         //var colnameStartTest = GetColumnName(columnCountStartTest);
 
@@ -2121,12 +2121,12 @@ var teamId = "0";
 
                         //var parentTable = sheet.tables.add(range, true /*hasHeaders*/);
                         //parentTable.load("name");
-                      
+
                         //console.log(range);
                         //var columnCount = columnCountEndTest;
                         //console.log(columnCount);
                         //Try end
-                    
+
                         parentTableColumnNames = addNumbersToDuplicates(parentTableColumnNames);
                         parentTable.getHeaderRowRange().values = [parentTableColumnNames];
                         var childTables = [];
@@ -2337,7 +2337,7 @@ var teamId = "0";
                 });
                 $('#editFieldsMapping').hide();
                 $('#ParentChildTable').show();
-                $("#accordion").accordion({ active: 7 });
+                $("#accordion").accordion({ active: 6 });
             } else {
                 app.showNotification('Message', 'No parent and child table found for the file.');
             }
@@ -2434,7 +2434,7 @@ var teamId = "0";
                     }
                     $('#ParentChildTable').hide();
                     $('#ParentChildTableRelationship').show();
-                    $("#accordion").accordion({ active: 8 });
+                    $("#accordion").accordion({ active: 7 });
                 } else {
                     app.showNotification('Error', 'Something went wrong. Please try again.');
                 }
@@ -2650,7 +2650,7 @@ var teamId = "0";
 
             $('#editSet').hide();
             $('#editFieldsMapping').show();
-            $("#accordion").accordion({ active: 4 });
+            $("#accordion").accordion({ active: 3 });
         }
     }
 
@@ -3110,7 +3110,7 @@ var teamId = "0";
 
                 $('#selectedSet').hide();
                 $('#editSet').show();
-                $("#accordion").accordion({ active: 3 });
+                $("#accordion").accordion({ active: 2 });
             } else {
                 app.showNotification('Error', 'Could not communicate with the server.');
             }
@@ -3177,7 +3177,7 @@ var teamId = "0";
                     localStorage.setItem("isTemplateSetEdited", true);
                     deletedFiles = [];
                     $("#newFiles").val('');
-                    EditSet(); 
+                    EditSet();
                     if (res === "success with warning") { app.showNotification('Error', 'Dynamic templates are not allowed'); }
                 }
                 else {
@@ -3242,11 +3242,11 @@ var teamId = "0";
             //table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
             //table_body += '</td>';
             table_body += '<td>';
-            if (isDemoSet) {                
-                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + " style='pointer-events: none'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";               
+            if (isDemoSet) {
+                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + " style='pointer-events: none'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
             }
             else {
-                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";               
+                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
             }
             table_body += '</td>';
             table_body += '<td>';

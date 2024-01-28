@@ -14,7 +14,7 @@
             //messageBanner.hideBanner();
             $('#txtusername').val("catalin@exceltoforms.com");
             $('#txtpassword').val("ExcelDev");
-            $('#txtAccount').val("exforms");
+            //$('#txtAccount').val("exforms");
             /*$('#txtusername').focus();*/
             $('#Login-button').click(LoginProcess);
             $("#dialog-notification").dialog({
@@ -31,16 +31,17 @@
                 }
             });
         });
+        $('#btnBack').click(RedirectToLandingPage);
     };
 
-    function LoginProcess() {        
+    function LoginProcess() {
         Excel.run(function (ctx) {
             return ctx.sync()
-                .then(function () {                    
+                .then(function () {
                     var dataToPassToService = {
                         UserName: $.trim($('#txtusername').val()),
                         Password: $.trim($('#txtpassword').val()),
-                        UserAccount: $.trim($('#txtAccount').val())
+                        UserAccount: "" //$.trim($('#txtAccount').val())
                     };
 
                     if (validateUser(dataToPassToService.UserName, dataToPassToService.Password, dataToPassToService.UserAccount)) {
@@ -58,8 +59,11 @@
                             contentType: 'application/json;charset=utf-8'
                         }).done(function (data) {
                             if (data.Status === "Success!") {
+                                console.log(data);
                                 localStorage.setItem("CompanyID", data.CompanyID);
                                 localStorage.setItem("UserID", data.UserID);
+                                localStorage.setItem("UserName", data.UserName);
+                                localStorage.setItem("FullName", data.FullName);
                                 localStorage.setItem("CompanyName", data.CompanyName);
                                 localStorage.setItem("UserType", data.UserType);
                                 window.location.href = '../DashBoard/DashBoard.html';
@@ -78,7 +82,7 @@
         }).catch(errorHandler);
 
     }
-    function validateUser(name, password,account) {
+    function validateUser(name, password, account) {
         if (name === '') {
             app.showNotification('Error', "Please enter user name.");
             $('#txtusername').focus();
@@ -99,19 +103,19 @@
             $('#txtpassword').focus();
             return false;
         }
-        else if (account === '') {
-            app.showNotification('Error', "Please enter account name.");
-            $('#txtAccount').focus();
-            return false;
-        }
-        else if (account.length > 150) {
-            app.showNotification('Error', "Account name cannot exceed 150 characters.");
-            $('#txtAccount').focus();
-            return false;
-        }
+        //else if (account === '') {
+        //    app.showNotification('Error', "Please enter account name.");
+        //    $('#txtAccount').focus();
+        //    return false;
+        //}
+        //else if (account.length > 150) {
+        //    app.showNotification('Error', "Account name cannot exceed 150 characters.");
+        //    $('#txtAccount').focus();
+        //    return false;
+        //}
         return true;
     }
-    
+
     function errorHandler(error) {
         showNotification("Error", error);
         console.log("Error: " + error);
@@ -126,5 +130,9 @@
         $('#ms-MessageBanner').slideDown('slow');
         messageBanner.showBanner();
         messageBanner.toggleExpansion();
+    }
+
+    function RedirectToLandingPage() {
+        window.location.href = '../LandingPage/LandingPage.html';
     }
 })();

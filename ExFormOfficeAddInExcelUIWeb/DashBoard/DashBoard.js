@@ -24,6 +24,7 @@ var rootNodeText = '';
 var excelVersion = '';
 var isNamingOptionsModified = false;
 var teamId = "0";
+var treeData = [{}];
 
 (function () {
     "use strict";
@@ -34,8 +35,13 @@ var teamId = "0";
             // Initialize the FabricUI notification mechanism and hide it
             var to = false;
             $('.ms-NavBar').NavBar();
+
+            $("#spnUserName").text(localStorage.getItem("FullName"));
             $("#logout").show();
             $("#loggingout").hide();
+
+            $("#btnLogoutTop").show();
+            $("#btnLogginOutTop").hide();
             $("#accordion").accordion();
 
             bindAccountDropdown();
@@ -47,6 +53,7 @@ var teamId = "0";
                 $("#divEditSet").hide();
             }
             $("#Logout-buttonn").click(LogoutBtn);
+            $("#btnLogoutTop").click(LogoutBtn);
 
             $('#newSet').hide();
             $('#defalts').hide();
@@ -113,395 +120,41 @@ var teamId = "0";
                 $("#CompName").html(localStorage.getItem("CompanyName") + "'s Forms List");
             }
 
+            $("#dd_account").change(function () {
+                
+                if ($("#dd_account").val() > 0) {
+                    $("#CompName").html($("#dd_account option:selected").text() + "'s Forms List");
+                    bindTeamDropdown($("#dd_account").val());
+                }
+                else {
+                    $("#CompName").html(localStorage.getItem("CompanyName") + "'s Forms List");
+                }
+            });
+            $("#dd_team").change(function () {
+                //debugger;
+                teamId = $("#dd_team").val();
+                if ($("#dd_team").val() > 0) {
+                    //$("#CompName").html($("#dd_team option:selected").text() + "'s Forms List"); //Uncomment this line if want to show team name
+                    GetTreeData($("#dd_team").val());
+                }
+                //else {
+                //    $("#CompName").html($("#dd_account option:selected").text() + "'s Forms List");
+                //}
+            });
+
             if (localStorage.getItem("isSaved") === "true") {
                 localStorage.setItem("isSaved", false);
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });//
             }
             if (localStorage.getItem("isTemplateSetEdited") === "true") {
                 localStorage.setItem("isTemplateSetEdited", false);
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });//
             }
-            $('#data').jstree({
-                'core': {
-                    "multiple": false,
-                    'data': {
-                        "url": "/api/TreeNode/GetFolders",
-                        "data": function (node) {
-                            return { "id": node.id.replace(/F/ig, "").replace(/T/ig, ""), "companyId": localStorage.getItem("CompanyID"), "teamId": teamId };
-                        },
-                        "dataType": "json",
-                        "type": "get",
-                        "error": function (jqXHR, textStatus, errorThrown) { $('#data').html("<h3>There was an error while loading data for this tree</h3><p>" + jqXHR.responseText + "</p>"); }
-                    },
-                    "check_callback": true
-                },
-                "contextmenu": {
-                    "items": customMenu
-                },
-                "plugins": [
-                    "contextmenu", "search", "types"
-                ],
-                'types': {
-                    '#': { /* options */ },
-                    'Folder': { /* options */ },
-                    'File': { /* options */ }
-                }
-            }).on('hover_node.jstree', function (e, data) {
-                if (data.node.original.title !== null) {
-                    $("#" + data.node.id).prop('title', data.node.original.title);
-                }
-            }).on('loaded.jstree', function () {
-                $("#data").jstree("open_all");
-            });
 
-            function customMenu(node) {
-                var tree = $("#tree").jstree(true);
-                var items = {
-                    "Expand": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Expand",
-                        "action": function (obj) {
-                            $("#data").jstree().open_node(node.id, function () { ; }, false);
-                        }
-                    },
-                    "Collapse": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Collapse",
-                        "action": function (obj) {
-                            $("#data").jstree().close_node(node.id, function () { ; }, false);
-                        }
-                    },
-                    "AddFolder": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Add Folder",
-                        "action": function (obj) {
-                            var ref = $('#data').jstree(true),
-                                sel = ref.get_selected();
-                            if (!sel.length) { return false; }
-                            sel = sel[0];
-                            sel = ref.create_node("#", { "type": "Folder" });
-                            if (sel) {
-                                ref.edit(sel);
-                            }
-                        }
-                    },
-                    "AddSubFolder": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Add Sub Folder",
-                        "action": function (obj) {
-                            $("#data").jstree().open_node(node.id, function () {
-
-                                var ref = $('#data').jstree(true),
-                                    sel = ref.get_selected();
-                                if (!sel.length) { return false; }
-                                sel = sel[0];
-                                sel = ref.create_node(sel, { "type": "Folder" });
-                                if (sel) {
-                                    ref.edit(sel);
-                                }
-
-                            }, false);
-                        }
-                    },
-                    "AddNewSet": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Add New Set",
-                        "action": function (obj) {
-                            $('#txtOuptputFileName').prop('disabled', true);
-                            $('#txtSubfolderName').prop('disabled', true);
-                            $('#txtSetName').val("");
-                            $('#txtDescription').val("");
-                            $('#btnUpload').hide();
-                            $('#templateSets').hide();
-                            $('#newSet').show();
-                            $("#accordion").accordion({ active: 5 });
-                        }
-                    },
-                    "DeleteFolder": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Delete Folder",
-                        "action": function (obj) {
-                            confirmRemove();
-                        }
-                    },
-                    "RenameFolder": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Rename Folder",
-                        "action": function (obj) {
-                            var ref = $('#data').jstree(true),
-                                sel = ref.get_selected();
-                            if (!sel.length) { return false; }
-                            sel = sel[0];
-                            ref.edit(sel);
-                        }
-                    },
-                    "SelectSet": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Select Set",
-                        "action": function (obj) {
-                            $("#data").jstree().select_node(node.id, function () { ; }, false);
-                            var id = node.id;
-                            isDemoSet = node.original.IsDemo;
-                            if (isDemoSet || IsAdmin() || IsSuperAdmin()) {
-                                $("#divEditSet").show();
-                            } else {
-                                $("#divEditSet").hide();
-                            }
-
-                            if (id !== undefined && id.indexOf("T") !== -1) {
-                                var templateId = parseInt(id.replace("T", ""));
-
-                                Excel.run(function (context) {
-                                    var xmlpart = context.workbook.customXmlParts.getByNamespace("exceltoforms").getOnlyItem();
-                                    xmlpart.load("id");
-                                    return context.sync()
-                                        .then(function () {
-                                            if (xmlpart.id) {
-                                                $.ajax({
-                                                    url: "/api/Template/GetExcelVersion",
-                                                    type: 'Get',
-                                                    data: {
-                                                        templateId: templateId
-                                                    },
-                                                    contentType: 'application/json;charset=utf-8'
-                                                }).done(function (res) {
-                                                    if (res.Error !== null && res.Error !== "") {
-                                                        app.showNotification('Error', res.Error);
-                                                    }
-                                                    else if (res.ExcelVersion === null || res.ExcelVersion === "") {
-                                                        $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
-                                                        $('#divSendData').hide();
-                                                        $('#divDownloadExcel').hide();
-                                                        app.showNotification('Error', 'Custom xml part not found.');
-                                                    }
-                                                    else if (res === xmlpart.id) {
-                                                        $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
-                                                        isExcelVersioMatching = true;
-                                                        $('#divEditSet').show();
-                                                        $('#divSendData').show();
-                                                        $('#divDownloadExcel').hide();
-                                                        $('#divDownloadExcelNote').hide();
-                                                        $('#templateSets').hide();
-                                                        $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
-                                                        //app.showNotification('Message', 'saved customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
-                                                    }
-                                                    else {
-                                                        $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
-                                                        isExcelVersioMatching = false;
-                                                        $('#divEditSet').hide();
-                                                        $('#divSendData').hide();
-                                                        $('#divDownloadExcel').show();
-                                                        $('#divDownloadExcelNote').show();
-                                                        $('#templateSets').hide();
-                                                        $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
-                                                        //app.showNotification('Message', 'save customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
-                                                    }
-                                                }).fail(function (status) {
-                                                    app.showNotification('Error', status.responseText);
-                                                });
-                                            }
-                                            else {
-                                                $.ajax({
-                                                    url: "/api/Template/GetExcelVersion",
-                                                    type: 'Get',
-                                                    data: {
-                                                        templateId: templateId
-                                                    },
-                                                    contentType: 'application/json;charset=utf-8'
-                                                }).done(function (res) {
-                                                    if (res.Error === null || res.Error === "") {
-                                                        $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
-                                                        $('#divSendData').hide();
-                                                        $('#divEditSet').hide();
-                                                        $('#divDownloadExcel').show();
-                                                        $('#divDownloadExcelNote').hide();
-                                                        $('#templateSets').hide();
-                                                        $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
-                                                        //app.showNotification('Message', 'excel customxmlid=' + xmlpart.id);
-                                                    } else {
-                                                        app.showNotification('Error', res.Error);
-                                                    }
-                                                }).fail(function (status) {
-                                                    app.showNotification('Error', status.responseText);
-                                                });
-                                            }
-                                        }).catch(function (error) {
-                                            if (error.message === "This operation is not permitted for the current object.") {
-                                                $.ajax({
-                                                    url: "/api/Template/GetExcelVersion",
-                                                    type: 'Get',
-                                                    data: {
-                                                        templateId: templateId
-                                                    },
-                                                    contentType: 'application/json;charset=utf-8'
-                                                }).done(function (res) {
-                                                    if (res.Error === null || res.Error === "") {
-                                                        $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
-                                                        $('#divSendData').hide();
-                                                        $('#divEditSet').hide();
-                                                        $('#divDownloadExcel').show();
-                                                        $('#divDownloadExcelNote').hide();
-                                                        $('#templateSets').hide();
-                                                        $('#selectedSet').show();
-                                                        $("#accordion").accordion({ active: 2 });
-                                                        //app.showNotification('Message', 'excel customxmlid=undefined');
-                                                    } else {
-                                                        app.showNotification('Error', res.Error);
-                                                    }
-                                                }).fail(function (status) {
-                                                    app.showNotification('Error', status.responseText);
-                                                });
-                                            } else {
-                                                app.showNotification('Error', error.message);
-                                            }
-                                        });
-                                });
-                            }
-                        }
-                    },
-                    "DuplicateSet": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Duplicate Set",
-                        "action": function (obj) {
-                            var ref = $('#data').jstree(true),
-                                sel = ref.get_selected();
-                            if (!sel.length) { return false; }
-                            sel = sel[0];
-                            ref.copy(sel);
-                        }
-                    },
-                    "DeleteSet": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Delete Set",
-                        "action": function (obj) {
-                            confirmRemove();
-                        }
-                    },
-                    "RenameSet": {
-                        "separator_before": false,
-                        "separator_after": false,
-                        "label": "Rename Set",
-                        "action": function (obj) {
-                            var ref = $('#data').jstree(true),
-                                sel = ref.get_selected();
-                            if (!sel.length) { return false; }
-                            sel = sel[0];
-                            ref.edit(sel);
-                        }
-                    }
-                };
-
-                if (IsAdmin()) {
-                    if (node.type === 'File') {
-                        if (node.original.IsDemo) {
-                            delete items.Expand;
-                            delete items.Collapse;
-                            delete items.DeleteFolder;
-                            delete items.RenameFolder;
-                            delete items.AddNewSet;
-                            delete items.AddSubFolder;
-                            delete items.DuplicateSet;
-                            delete items.RenameSet;
-                            delete items.DeleteSet;
-                            delete items.AddFolder;
-                        } else {
-                            delete items.Expand;
-                            delete items.Collapse;
-                            delete items.DeleteFolder;
-                            delete items.RenameFolder;
-                            delete items.AddNewSet;
-                            delete items.AddSubFolder;
-                        }
-                    }
-                    else if (node.type === 'Folder') {
-                        if (node.original.IsDemo) {
-                            delete items.DeleteFolder;
-                            delete items.RenameFolder;
-                            delete items.AddNewSet;
-                            delete items.AddSubFolder;
-                            delete items.SelectSet;
-                            delete items.DuplicateSet;
-                            delete items.RenameSet;
-                            delete items.DeleteSet;
-                        } else {
-                            delete items.SelectSet;
-                            delete items.DuplicateSet;
-                            delete items.RenameSet;
-                            delete items.DeleteSet;
-                        }
-                    }
-                }
-                else if (IsSuperAdmin()) {
-                    if (node.type === 'File') {
-                        delete items.Expand;
-                        delete items.Collapse;
-                        delete items.DeleteFolder;
-                        delete items.RenameFolder;
-                        delete items.AddNewSet;
-                        delete items.AddSubFolder;
-                        delete items.DuplicateSet;
-                        delete items.AddFolder;
-                    }
-                    else if (node.type === 'Folder') {
-                        delete items.SelectSet;
-                        delete items.DuplicateSet;
-                        delete items.RenameSet;
-                        delete items.DeleteSet;
-                        if (node.original.IsDemo) {
-                            delete items.DeleteFolder;
-                            delete items.RenameFolder;
-                            delete items.AddSubFolder;
-                        }
-                    }
-                }
-                else {
-                    if (node.type === 'File') {
-                        delete items.Expand;
-                        delete items.Collapse;
-                        delete items.DeleteFolder;
-                        delete items.RenameFolder;
-                        delete items.AddNewSet;
-                        delete items.AddSubFolder;
-                        delete items.DuplicateSet;
-                        delete items.RenameSet;
-                        delete items.DeleteSet;
-                        delete items.AddFolder;
-                        delete items.DuplicateSet;
-                        delete items.RenameSet;
-                        delete items.DeleteSet;
-                    }
-                    else if (node.type === 'Folder') {
-                        delete items.SelectSet;
-                        delete items.DuplicateSet;
-                        delete items.RenameSet;
-                        delete items.DeleteSet;
-                        delete items.DeleteFolder;
-                        delete items.RenameFolder;
-                        delete items.AddNewSet;
-                        delete items.AddFolder;
-                        delete items.AddSubFolder;
-                    }
-                }
-
-                return items;
-            }
 
             function OpenInfoUrl() {
                 window.open('http://exceltoforms.com', '_blank');
@@ -511,14 +164,12 @@ var teamId = "0";
                 window.open('http://exceltoforms.com', '_blank');
             }
 
-            function confirmRemove() {
-                $("#dialog-confirm").dialog("open");
-            }
+
 
             function SetOfForms() {
                 $('#info').hide();
                 $('#templateSets').show();
-                $("#accordion").accordion({ active: 1 });
+                $("#accordion").accordion({ active: 0 });//
             }
 
             function GetMappedPercentage(fileId) {
@@ -534,7 +185,7 @@ var teamId = "0";
             function BackToInfo() {
                 $('#info').show();
                 $('#templateSets').hide();
-                $("#accordion").accordion({ active: 0 });
+                $("#accordion").accordion({ active: -1 });//
             }
 
             function BackToSet() {
@@ -544,7 +195,7 @@ var teamId = "0";
                     $('#selectedSet').hide();
                     $('#newSet').hide();
                     $('#templateSets').show();
-                    $("#accordion").accordion({ active: 1 });
+                    $("#accordion").accordion({ active: 0 });//
                 }
             }
 
@@ -579,7 +230,7 @@ var teamId = "0";
                                         $('#divDownloadExcel').hide();
                                         $('#editSet').hide();
                                         $('#selectedSet').show();
-                                        $("#accordion").accordion({ active: 2 });
+                                        $("#accordion").accordion({ active: 1 });//
                                     }
                                     else {
                                         isExcelVersioMatching = false;
@@ -588,7 +239,7 @@ var teamId = "0";
                                         $('#divDownloadExcel').show();
                                         $('#editSet').hide();
                                         $('#selectedSet').show();
-                                        $("#accordion").accordion({ active: 2 });
+                                        $("#accordion").accordion({ active: 1 });//
                                     }
                                 }).fail(function (status) {
                                     app.showNotification('Error', 'Could not communicate with the server.');
@@ -596,7 +247,7 @@ var teamId = "0";
                             } else {
                                 $('#editSet').hide();
                                 $('#selectedSet').show();
-                                $("#accordion").accordion({ active: 2 });
+                                $("#accordion").accordion({ active: 1 });//
                             }
                         });
                 });
@@ -728,7 +379,7 @@ var teamId = "0";
                                 $('#defaults').hide();
                                 $('#editFieldsMapping').hide();
                                 $('#editSet').show();
-                                $("#accordion").accordion({ active: 3 });
+                                $("#accordion").accordion({ active: 2 });//
                             }).fail(function (status) {
                                 app.showNotification('Error', 'Could not communicate with the server.');
                             }).always(function () {
@@ -739,7 +390,7 @@ var teamId = "0";
                             $('#defaults').hide();
                             $('#editFieldsMapping').hide();
                             $('#editSet').show();
-                            $("#accordion").accordion({ active: 3 });
+                            $("#accordion").accordion({ active: 2 });//
                         }
                     },
                     Cancel: function () {
@@ -787,6 +438,36 @@ var teamId = "0";
                 }
             });
 
+            $('#data').jstree({
+                'core': {
+                    "multiple": false,
+                    'data': treeData,
+                    "check_callback": true
+                },
+                "contextmenu": {
+                    "items": customMenu
+                },
+                "plugins": [
+                    "contextmenu", "search", "types"
+                ],
+                'types': {
+                    '#': { /* options */ },
+                    'Folder': { /* options */ },
+                    'File': { /* options */ }
+                }
+            }).on('hover_node.jstree', function (e, data) {
+                if (data.node.original.title !== null) {
+                    $("#" + data.node.id).prop('title', data.node.original.title);
+                }
+            });
+            
+            $('#data').on('loaded.jstree', function () {                
+               $("#data").jstree("open_all");
+            });
+            $('#data').bind("refresh.jstree", function (event, data) {                
+                $('#data').jstree("open_all");
+            });
+
             $('#data').on('rename_node.jstree', function (e, data) {
                 if (data.node.original.IsDemo && data.node.type === "Folder") {
                     e.preventDefault();
@@ -806,14 +487,17 @@ var teamId = "0";
                         CompanyId: localStorage.getItem("CompanyID"),
                         TeamId: teamId
                     };
+                    console.log(upsertTemplateFolder);
                     $.ajax({
                         url: "/api/TreeNode/UpsertTemplateFolder",
                         type: 'post',
                         data: JSON.stringify(upsertTemplateFolder),
                         contentType: 'application/json;charset=utf-8'
                     }).done(function (data) {
+                        console.log(ParentId);
                         if (ParentId === "#") {
-                            $("#data").jstree("refresh");
+                            GetTreeData(teamId);
+                            //$("#data").jstree(true).refresh();
                         } else
                             $("#data").jstree().refresh_node(ParentId);
                     }).fail(function (status) {
@@ -938,7 +622,7 @@ var teamId = "0";
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });//
                                             //app.showNotification('Message', 'saved customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                         }
                                         else {
@@ -950,7 +634,7 @@ var teamId = "0";
                                             $('#divDownloadExcelNote').show();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });//
                                             //app.showNotification('Message', 'save customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
                                         }
                                     }).fail(function (status) {
@@ -974,7 +658,7 @@ var teamId = "0";
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });//
                                             //app.showNotification('Message', 'excel customxmlid=' + xmlpart.id);
                                         } else {
                                             app.showNotification('Error', res.Error);
@@ -1001,7 +685,7 @@ var teamId = "0";
                                             $('#divDownloadExcelNote').hide();
                                             $('#templateSets').hide();
                                             $('#selectedSet').show();
-                                            $("#accordion").accordion({ active: 2 });
+                                            $("#accordion").accordion({ active: 1 });//
                                             //app.showNotification('Message', 'excel customxmlid=undefined');
                                         } else {
                                             app.showNotification('Error', res.Error);
@@ -1165,14 +849,380 @@ var teamId = "0";
         });
     };
 
-    $("#dd_account").change(function () {        
-        bindTeamDropdown($("#dd_account").val());
-    });
-    $("#dd_team").change(function () {
-        teamId = $('option:selected', this).id;
-        console.log(teamId + " " + $('option:selected', this).text());
-    });
+    function confirmRemove() {
+        $("#dialog-confirm").dialog("open");
+    }
+    function bindTemplateTree(data) {
+        treeData = data;
+       
+        $('#data').jstree(true).settings.core.data = data;
+        $('#data').jstree(true).settings.contextmenu.items = customMenu;
+        $('#data').jstree().refresh();
+        //$('#data').trigger('loaded.jstree', function () {  });
+    }
+    
+    function GetTreeData(pTeamId) {
+        $.ajax({
+            url: "/api/TreeNode/GetFolders",
+            type: 'Get',
+            data: {
+                id: null,
+                companyId: localStorage.getItem("CompanyID"),
+                teamId: pTeamId
+            },
+            contentType: 'application/json;charset=utf-8'
+        }).done(function (res) {
+            $("#divTree").show();
+            bindTemplateTree(res);
+        }).fail(function (status) {
+            app.showNotification('Error', 'There was an error while loading data for this tree.');
+        });
+    }
 
+    function customMenu(node) {
+        var tree = $("#tree").jstree(true);
+        var items = {
+            "Expand": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Expand",
+                "action": function (obj) {
+                    $("#data").jstree().open_node(node.id, function () { ; }, false);
+                }
+            },
+            "Collapse": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Collapse",
+                "action": function (obj) {
+                    $("#data").jstree().close_node(node.id, function () { ; }, false);
+                }
+            },
+            "AddFolder": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Add Folder",
+                "action": function (obj) {
+                    var ref = $('#data').jstree(true),
+                        sel = ref.get_selected();
+                    if (!sel.length) { return false; }
+                    sel = sel[0];
+                    sel = ref.create_node("#", { "type": "Folder" });
+                    if (sel) {
+                        ref.edit(sel);
+                    }
+                }
+            },
+            "AddSubFolder": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Add Sub Folder",
+                "action": function (obj) {
+                    $("#data").jstree().open_node(node.id, function () {
+
+                        var ref = $('#data').jstree(true),
+                            sel = ref.get_selected();
+                        if (!sel.length) { return false; }
+                        sel = sel[0];
+                        sel = ref.create_node(sel, { "type": "Folder" });
+                        if (sel) {
+                            ref.edit(sel);
+                        }
+
+                    }, false);
+                }
+            },
+            "AddNewSet": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Add New Set",
+                "action": function (obj) {
+                    $('#txtOuptputFileName').prop('disabled', true);
+                    $('#txtSubfolderName').prop('disabled', true);
+                    $('#txtSetName').val("");
+                    $('#txtDescription').val("");
+                    $('#btnUpload').hide();
+                    $('#templateSets').hide();
+                    $('#newSet').show();
+                    $("#accordion").accordion({ active: 4 });//
+                }
+            },
+            "DeleteFolder": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Delete Folder",
+                "action": function (obj) {
+                    confirmRemove();
+                }
+            },
+            "RenameFolder": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Rename Folder",
+                "action": function (obj) {
+                    var ref = $('#data').jstree(true),
+                        sel = ref.get_selected();
+                    if (!sel.length) { return false; }
+                    sel = sel[0];
+                    ref.edit(sel);
+                }
+            },
+            "SelectSet": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Select Set",
+                "action": function (obj) {
+                    $("#data").jstree().select_node(node.id, function () { ; }, false);
+                    var id = node.id;
+                    isDemoSet = node.original.IsDemo;
+                    if (isDemoSet || IsAdmin() || IsSuperAdmin()) {
+                        $("#divEditSet").show();
+                    } else {
+                        $("#divEditSet").hide();
+                    }
+
+                    if (id !== undefined && id.indexOf("T") !== -1) {
+                        var templateId = parseInt(id.replace("T", ""));
+
+                        Excel.run(function (context) {
+                            var xmlpart = context.workbook.customXmlParts.getByNamespace("exceltoforms").getOnlyItem();
+                            xmlpart.load("id");
+                            return context.sync()
+                                .then(function () {
+                                    if (xmlpart.id) {
+                                        $.ajax({
+                                            url: "/api/Template/GetExcelVersion",
+                                            type: 'Get',
+                                            data: {
+                                                templateId: templateId
+                                            },
+                                            contentType: 'application/json;charset=utf-8'
+                                        }).done(function (res) {
+                                            if (res.Error !== null && res.Error !== "") {
+                                                app.showNotification('Error', res.Error);
+                                            }
+                                            else if (res.ExcelVersion === null || res.ExcelVersion === "") {
+                                                $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
+                                                $('#divSendData').hide();
+                                                $('#divDownloadExcel').hide();
+                                                app.showNotification('Error', 'Custom xml part not found.');
+                                            }
+                                            else if (res === xmlpart.id) {
+                                                $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
+                                                isExcelVersioMatching = true;
+                                                $('#divEditSet').show();
+                                                $('#divSendData').show();
+                                                $('#divDownloadExcel').hide();
+                                                $('#divDownloadExcelNote').hide();
+                                                $('#templateSets').hide();
+                                                $('#selectedSet').show();
+                                                $("#accordion").accordion({ active: 1 });//
+                                                //app.showNotification('Message', 'saved customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
+                                            }
+                                            else {
+                                                $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
+                                                isExcelVersioMatching = false;
+                                                $('#divEditSet').hide();
+                                                $('#divSendData').hide();
+                                                $('#divDownloadExcel').show();
+                                                $('#divDownloadExcelNote').show();
+                                                $('#templateSets').hide();
+                                                $('#selectedSet').show();
+                                                $("#accordion").accordion({ active: 1 });//
+                                                //app.showNotification('Message', 'save customxmlid=' + res + ', excel customxmlid=' + xmlpart.id);
+                                            }
+                                        }).fail(function (status) {
+                                            app.showNotification('Error', status.responseText);
+                                        });
+                                    }
+                                    else {
+                                        $.ajax({
+                                            url: "/api/Template/GetExcelVersion",
+                                            type: 'Get',
+                                            data: {
+                                                templateId: templateId
+                                            },
+                                            contentType: 'application/json;charset=utf-8'
+                                        }).done(function (res) {
+                                            if (res.Error === null || res.Error === "") {
+                                                $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
+                                                $('#divSendData').hide();
+                                                $('#divEditSet').hide();
+                                                $('#divDownloadExcel').show();
+                                                $('#divDownloadExcelNote').hide();
+                                                $('#templateSets').hide();
+                                                $('#selectedSet').show();
+                                                $("#accordion").accordion({ active: 1 });//
+                                                //app.showNotification('Message', 'excel customxmlid=' + xmlpart.id);
+                                            } else {
+                                                app.showNotification('Error', res.Error);
+                                            }
+                                        }).fail(function (status) {
+                                            app.showNotification('Error', status.responseText);
+                                        });
+                                    }
+                                }).catch(function (error) {
+                                    if (error.message === "This operation is not permitted for the current object.") {
+                                        $.ajax({
+                                            url: "/api/Template/GetExcelVersion",
+                                            type: 'Get',
+                                            data: {
+                                                templateId: templateId
+                                            },
+                                            contentType: 'application/json;charset=utf-8'
+                                        }).done(function (res) {
+                                            if (res.Error === null || res.Error === "") {
+                                                $('#divUpdateInfo').html('<b>Modified By </b>' + res.UpdatedBy + " on " + res.UpdatedOn);
+                                                $('#divSendData').hide();
+                                                $('#divEditSet').hide();
+                                                $('#divDownloadExcel').show();
+                                                $('#divDownloadExcelNote').hide();
+                                                $('#templateSets').hide();
+                                                $('#selectedSet').show();
+                                                $("#accordion").accordion({ active: 1 });//
+                                                //app.showNotification('Message', 'excel customxmlid=undefined');
+                                            } else {
+                                                app.showNotification('Error', res.Error);
+                                            }
+                                        }).fail(function (status) {
+                                            app.showNotification('Error', status.responseText);
+                                        });
+                                    } else {
+                                        app.showNotification('Error', error.message);
+                                    }
+                                });
+                        });
+                    }
+                }
+            },
+            "DuplicateSet": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Duplicate Set",
+                "action": function (obj) {
+                    var ref = $('#data').jstree(true),
+                        sel = ref.get_selected();
+                    if (!sel.length) { return false; }
+                    sel = sel[0];
+                    ref.copy(sel);
+                }
+            },
+            "DeleteSet": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Delete Set",
+                "action": function (obj) {
+                    confirmRemove();
+                }
+            },
+            "RenameSet": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Rename Set",
+                "action": function (obj) {
+                    var ref = $('#data').jstree(true),
+                        sel = ref.get_selected();
+                    if (!sel.length) { return false; }
+                    sel = sel[0];
+                    ref.edit(sel);
+                }
+            }
+        };
+
+        if (IsAdmin()) {
+            if (node.type === 'File') {
+                if (node.original.IsDemo) {
+                    delete items.Expand;
+                    delete items.Collapse;
+                    delete items.DeleteFolder;
+                    delete items.RenameFolder;
+                    delete items.AddNewSet;
+                    delete items.AddSubFolder;
+                    delete items.DuplicateSet;
+                    delete items.RenameSet;
+                    delete items.DeleteSet;
+                    delete items.AddFolder;
+                } else {
+                    delete items.Expand;
+                    delete items.Collapse;
+                    delete items.DeleteFolder;
+                    delete items.RenameFolder;
+                    delete items.AddNewSet;
+                    delete items.AddSubFolder;
+                }
+            }
+            else if (node.type === 'Folder') {
+                if (node.original.IsDemo) {
+                    delete items.DeleteFolder;
+                    delete items.RenameFolder;
+                    delete items.AddNewSet;
+                    delete items.AddSubFolder;
+                    delete items.SelectSet;
+                    delete items.DuplicateSet;
+                    delete items.RenameSet;
+                    delete items.DeleteSet;
+                } else {
+                    delete items.SelectSet;
+                    delete items.DuplicateSet;
+                    delete items.RenameSet;
+                    delete items.DeleteSet;
+                }
+            }
+        }
+        else if (IsSuperAdmin()) {
+            if (node.type === 'File') {
+                delete items.Expand;
+                delete items.Collapse;
+                delete items.DeleteFolder;
+                delete items.RenameFolder;
+                delete items.AddNewSet;
+                delete items.AddSubFolder;
+                delete items.DuplicateSet;
+                delete items.AddFolder;
+            }
+            else if (node.type === 'Folder') {
+                delete items.SelectSet;
+                delete items.DuplicateSet;
+                delete items.RenameSet;
+                delete items.DeleteSet;
+                if (node.original.IsDemo) {
+                    delete items.DeleteFolder;
+                    delete items.RenameFolder;
+                    delete items.AddSubFolder;
+                }
+            }
+        }
+        else {
+            if (node.type === 'File') {
+                delete items.Expand;
+                delete items.Collapse;
+                delete items.DeleteFolder;
+                delete items.RenameFolder;
+                delete items.AddNewSet;
+                delete items.AddSubFolder;
+                delete items.DuplicateSet;
+                delete items.RenameSet;
+                delete items.DeleteSet;
+                delete items.AddFolder;
+                delete items.DuplicateSet;
+                delete items.RenameSet;
+                delete items.DeleteSet;
+            }
+            else if (node.type === 'Folder') {
+                delete items.SelectSet;
+                delete items.DuplicateSet;
+                delete items.RenameSet;
+                delete items.DeleteSet;
+                delete items.DeleteFolder;
+                delete items.RenameFolder;
+                delete items.AddNewSet;
+                delete items.AddFolder;
+                delete items.AddSubFolder;
+            }
+        }
+
+        return items;
+    }
     function bindAccountDropdown() {
 
         $.ajax({
@@ -1183,40 +1233,65 @@ var teamId = "0";
             },
             contentType: 'application/json;charset=utf-8'
         }).done(function (res) {
+            var firstAccount = 0;
             $.each(res, function (index, data) {
-                $("#dd_account").append($("<option></option>").val(data.value).html(data.key));
+                if (index == 0) {
+                    $("#dd_account").append($("<option selected></option>").val(data.Value).html(data.Key));
+                    firstAccount = parseInt(data.Value);
+                }
+                else {
+                    $("#dd_account").append($("<option></option>").val(data.Value).html(data.Key));
+                }
             });
-            
+            if (firstAccount > 0) {
+                bindTeamDropdown(firstAccount);
+                $("#divTeam").show();
+            }
+            $("#CompName").html($("#dd_account option:selected").text() + "'s Forms List");
         }).fail(function (status) {
             app.showNotification('Error', 'Could not communicate with the server.');
         });
     }
     function bindTeamDropdown(companyId) {
-
-        $.ajax({
-            url: "/api/GetTeamByAccount",
-            type: 'Get',
-            data: {
-                UserId: localStorage.getItem("UserID"),
-                CompanyId: companyId
-            },
-            contentType: 'application/json;charset=utf-8'
-        }).done(function (res) {
-            if (res) {
-                if (res.length == 1) {
-                    /*teamId = res[0].value;*/
-                    $("#dd_team").append($("<option selected></option>").val(res[0].value).html(res[0].key));
+        
+        if (companyId > 0) {
+            $.ajax({
+                url: "/api/GetTeamByAccount",
+                type: 'Get',
+                data: {
+                    UserId: localStorage.getItem("UserID"),
+                    CompanyId: companyId
+                },
+                contentType: 'application/json;charset=utf-8'
+            }).done(function (res) {
+                //debugger;
+                if (res) {
+                    if (res.length == 1) {
+                        teamId = res[0].Value;
+                        //console.log(teamId, res[0].Key);
+                        $("#dd_team").append($("<option selected></option>").val(res[0].Value).html(res[0].Key));
+                        $("#divTeam").hide();
+                        GetTreeData($("#dd_team").val());
+                    }
+                    else if (res.length > 1) {
+                        $.each(res, function (index, data) {
+                            $("#dd_team").append($("<option></option>").val(data.Value).html(data.Key));
+                        });
+                        $("#divTeam").show();
+                    }
+                    else {
+                        $("#divTeam").hide();
+                        GetTreeData(teamId);
+                    }                    
                 }
-                else if (res.length > 1) {
-                    $.each(res, function (index, data) {
-                        $("#dd_team").append($("<option></option>").val(data.value).html(data.key));
-                    });
-                    $("#divTeam").show();
+                else {
+                    $("#divTeam").hide();
+                    GetTreeData(teamId);
                 }
-            }            
-        }).fail(function (status) {
-            app.showNotification('Error', 'Could not communicate with the server.');
-        });
+            }).fail(function (status) {
+                app.showNotification('Error', 'Could not communicate with the server.');
+            });
+        }
     }
 
     function getDocumentAsCompressed(formData) {
@@ -1271,7 +1346,7 @@ var teamId = "0";
                 }
                 $('#editSet').hide();
                 $('#defaults').show();
-                $("#accordion").accordion({ active: 6 });
+                $("#accordion").accordion({ active: 5 });//
             }
         }).fail(function (status) {
             app.showNotification('Error', status.responseText);
@@ -1282,7 +1357,7 @@ var teamId = "0";
         $('#defaults').hide();
         $('#editFieldsMapping').hide();
         $('#editSet').show();
-        $("#accordion").accordion({ active: 3 });
+        $("#accordion").accordion({ active: 2 });//
     }
 
     function SendDataToTemplateSet() {
@@ -1708,7 +1783,7 @@ var teamId = "0";
     function BackToEditFieldsMapping() {
         $('#ParentChildTable').hide();
         $('#editFieldsMapping').show();
-        $("#accordion").accordion({ active: 4 });
+        $("#accordion").accordion({ active: 3 });//
     }
 
     function BackToTableRelationship() {
@@ -1732,7 +1807,7 @@ var teamId = "0";
                     });
                     $('#ParentChildTableRelationship').hide();
                     $('#ParentChildTable').show();
-                    $("#accordion").accordion({ active: 7 });
+                    $("#accordion").accordion({ active: 6 });//
                 } else {
                     app.showNotification('Message', 'No parent and child table found for the file.');
                 }
@@ -1744,7 +1819,7 @@ var teamId = "0";
         } else {
             $('#ParentChildTableRelationship').hide();
             $('#ParentChildTable').show();
-            $("#accordion").accordion({ active: 7 });
+            $("#accordion").accordion({ active: 6 });//
         }
     }
 
@@ -1873,170 +1948,6 @@ var teamId = "0";
         return newArray;
     }
 
-    function SyncMappedFields() {          
-
-        if (templateId > 0) {
-
-            $('#btnAutomapFields').hide();
-            $('#btnAutomappingFields').show();
-            $.ajax({
-                url: "/api/Template/SyncMappedFields",
-                type: 'get',
-                data: { templateId: templateId },
-                contentType: 'application/json;charset=utf-8'
-            }).done(function (res) {
-
-                if (res) {
-
-                    var previousParentId = '';
-                    var dynamicFieldIds = [];
-                    var dtParentFields = [];
-                    var parentTableColumnNames = [];
-                    parentTableColumnNames.push("ID");                   
-
-                    $.each(res, function (index, obj) {
-
-                        var templateFileMappingId = obj.TemplateFileMappingId;
-                        var pdfFieldName = obj.PDFFieldName;
-                        var isDynamic = obj.IsDynamic;
-                        var fieldId = obj.FieldId;
-                        var parentFieldId = obj.ParentFieldId;
-                        var hasChildFields = obj.HasChildFields;
-
-                        if (isDynamic) {
-                            previousParentId = fieldId;
-                            dynamicFieldIds.push(fieldId);
-                            return true;
-                        }
-                        else if ((previousParentId !== null || previousParentId !== '') && previousParentId === parentFieldId)
-                            return true;
-                        else if (parentFieldId === null || parentFieldId === '') {
-                            var parentField = {
-                                TemplateFileMappingId: templateFileMappingId,
-                                ExcelFieldName: null,
-                                SheetName: "",
-                                ExcelTableName: "",
-                                IsMapped: false
-                            };
-
-                            dtParentFields.push(parentField);
-                        }
-                        else if (!hasChildFields) {
-                            var parentField1 = {
-                                TemplateFileMappingId: templateFileMappingId,
-                                ExcelFieldName: pdfFieldName,
-                                SheetName: "",
-                                ExcelTableName: "",
-                                IsMapped: true
-                            };
-                            parentTableColumnNames.push(parentField1.ExcelFieldName);
-                            dtParentFields.push(parentField1);
-                        }
-
-                    });
-                    console.log(parentTableColumnNames);
-                    Excel.run(function (context) {
-                        var columnCount = parentTableColumnNames.length;
-                        var colname = GetColumnName(columnCount);
-                        var range = "A1:" + colname + "1";
-
-                        //var sheet = context.workbook.worksheets.getActiveWorksheet();
-
-                        var sheet = context.workbook.worksheets.add();
-                        sheet.load("name");
-                        var parentTable = sheet.tables.add(range, true /*hasHeaders*/);
-                        parentTable.load("name");
-                        parentTableColumnNames = addNumbersToDuplicates(parentTableColumnNames);
-                        parentTable.getHeaderRowRange().values = [parentTableColumnNames];
-                        var childTables = [];
-                        var dtChildFields = [];
-                        var childHeaders = [];
-
-                        for (var i = 0; i < dynamicFieldIds.length; i++) {
-                            var newArray = res.filter(function (item) {
-                                return item.ParentFieldId === dynamicFieldIds[i];
-                            });
-
-
-                            var start = columnCount + 2;
-                            var startColName = GetColumnName(start);
-                            columnCount = start + newArray.length;
-                            var endColName = GetColumnName(columnCount);
-                            range = startColName + "1:" + endColName + "1";
-                            var childTableColNames = [];
-                            childTableColNames.push("ID");
-
-                            $.each(newArray, function (j, arrobj) {
-                                var dynamicField = {
-                                    TemplateFileMappingId: arrobj.TemplateFileMappingId,
-                                    ExcelFieldName: arrobj.PDFFieldName,
-                                    SheetName: "",
-                                    ExcelTableName: i,
-                                    IsMapped: true,
-                                    ParentFieldId: arrobj.ParentFieldId
-                                };
-
-                                dtChildFields.push(dynamicField);
-                                childTableColNames.push(arrobj.PDFFieldName);
-                            });
-
-                            var childTable = sheet.tables.add(range, true /*hasHeaders*/);
-
-
-                            childTables.push(childTable);
-                            childTable.load("name");
-                            childTable.getHeaderRowRange().values = [childTableColNames];
-                            var childHeaderRange = childTable.getHeaderRowRange().load("values");
-                            childHeaders.push(childHeaderRange);
-                        }
-
-                        if (Office.context.requirements.isSetSupported("ExcelApi", "1.2")) {
-                            sheet.getUsedRange().format.autofitColumns();
-                            sheet.getUsedRange().format.autofitRows();
-                        }
-
-                        sheet.activate();
-
-                        return context.sync()
-                            .then(function () {
-                                $.each(dtParentFields, function (k, parentField) {
-                                    parentField.SheetName = sheet.name;
-                                    parentField.ExcelTableName = parentTable.name;
-                                });
-
-                                $.each(dtChildFields, function (l, childField) {
-                                    childField.SheetName = sheet.name;
-                                    /*$.each(childHeaders, function (m, childHeader) {
-                                        var headerValues = childHeader.values;
-                                    });*/
-                                    $.each(childTables, function (n, childTable) {
-                                        if (childField.ExcelTableName === n)
-                                            childField.ExcelTableName = childTable.name;
-                                    });
-                                });
-                                var fields = {
-                                    ParentFields: dtParentFields,
-                                    ChildFields: dtChildFields,
-                                    DynamicFieldIds: dynamicFieldIds,
-                                    TemplateId: templateId
-                                };                                
-
-                            });
-                    }).catch(errorHandlerFunction);
-                }
-                else if (res === null) {
-                    app.showNotification('Error', 'Something went wrong. Please try again.');
-                }
-            }).fail(function (status) {
-                app.showNotification('Error', 'Could not communicate with the server.');
-            }).always(function () {
-                setTimeout(function () {
-                    $('#btnAutomapFields').show();
-                    $('#btnAutomappingFields').hide();
-                }, 2500);
-            });
-        }
-    }
 
     function AutoMapFields() {
         //debugger;
@@ -2048,7 +1959,7 @@ var teamId = "0";
                 arrFileMap.push(currentTemplateFileId);
             }
             fileId = currentTemplateFileId;
-        }        
+        }
 
         if (templateId > 0) {
 
@@ -2071,12 +1982,12 @@ var teamId = "0";
                     var parentTableColumnNames = [];
                     parentTableColumnNames.push("ID");
 
-                    if (arrFileMap.length > 0) {                        
+                    if (arrFileMap.length > 0) {
                         res = res.filter(function (item) {
                             return arrFileMap.indexOf(item.TemplateFileId) > -1;
                         });
                     }
-                 
+
                     $.each(res, function (index, obj) {
 
                         var templateFileMappingId = obj.TemplateFileMappingId;
@@ -2117,7 +2028,7 @@ var teamId = "0";
                         }
 
                     });
-                    
+
                     Excel.run(function (context) {
                         var columnCount = parentTableColumnNames.length;
                         var colname = GetColumnName(columnCount);
@@ -2129,7 +2040,7 @@ var teamId = "0";
                         parentTable.load("name");
 
                         //Try start
-                        
+
                         //var colname = GetColumnName(parentTableColumnNames.length);
                         //var sheet = context.workbook.worksheets.getItem("sheet1");
                         //var parentTableExisting = sheet.tables.getItem("Table2");
@@ -2137,7 +2048,7 @@ var teamId = "0";
                         //var headerRange = parentTableExisting.getHeaderRowRange().load("values");
                         //var bodyRange = parentTableExisting.getDataBodyRange().load("values");
                         ////var arrExistingColCount = headerRange.load("values");
-                                               
+
                         //var columnCountStartTest = headerRange.values.length + 1;
                         //var colnameStartTest = GetColumnName(columnCountStartTest);
 
@@ -2148,12 +2059,12 @@ var teamId = "0";
 
                         //var parentTable = sheet.tables.add(range, true /*hasHeaders*/);
                         //parentTable.load("name");
-                      
+
                         //console.log(range);
                         //var columnCount = columnCountEndTest;
                         //console.log(columnCount);
                         //Try end
-                    
+
                         parentTableColumnNames = addNumbersToDuplicates(parentTableColumnNames);
                         parentTable.getHeaderRowRange().values = [parentTableColumnNames];
                         var childTables = [];
@@ -2364,7 +2275,7 @@ var teamId = "0";
                 });
                 $('#editFieldsMapping').hide();
                 $('#ParentChildTable').show();
-                $("#accordion").accordion({ active: 7 });
+                $("#accordion").accordion({ active: 6 });//
             } else {
                 app.showNotification('Message', 'No parent and child table found for the file.');
             }
@@ -2461,7 +2372,7 @@ var teamId = "0";
                     }
                     $('#ParentChildTable').hide();
                     $('#ParentChildTableRelationship').show();
-                    $("#accordion").accordion({ active: 8 });
+                    $("#accordion").accordion({ active: 7 });//
                 } else {
                     app.showNotification('Error', 'Something went wrong. Please try again.');
                 }
@@ -2677,7 +2588,7 @@ var teamId = "0";
 
             $('#editSet').hide();
             $('#editFieldsMapping').show();
-            $("#accordion").accordion({ active: 4 });
+            $("#accordion").accordion({ active: 3 });//
         }
     }
 
@@ -3137,7 +3048,7 @@ var teamId = "0";
 
                 $('#selectedSet').hide();
                 $('#editSet').show();
-                $("#accordion").accordion({ active: 3 });
+                $("#accordion").accordion({ active: 2 });//
             } else {
                 app.showNotification('Error', 'Could not communicate with the server.');
             }
@@ -3204,7 +3115,7 @@ var teamId = "0";
                     localStorage.setItem("isTemplateSetEdited", true);
                     deletedFiles = [];
                     $("#newFiles").val('');
-                    EditSet(); 
+                    EditSet();
                     if (res === "success with warning") { app.showNotification('Error', 'Dynamic templates are not allowed'); }
                 }
                 else {
@@ -3656,6 +3567,10 @@ var teamId = "0";
     function LogoutBtn() {
         $("#logout").hide();
         $("#loggingout").show();
+
+        $("#btnLogoutTop").hide();
+        $("#btnLogginOutTop").show();
+
         localStorage.clear();
         setTimeout(function () {
             app.Signout();

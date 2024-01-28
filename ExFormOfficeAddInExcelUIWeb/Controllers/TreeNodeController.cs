@@ -1,5 +1,6 @@
 ﻿using ExFormOfficeAddInBAL;
 using ExFormOfficeAddInEntities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
@@ -21,7 +22,8 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
         {
             public string id;
             public string text;
-            public object children;
+            public string parent;
+            //public object children;
             public string icon;
             public string type;
             public string title;
@@ -53,7 +55,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
         {
             try
             {
-                if(upsertTemplateFolder.ParentFolderId=="#")
+                if (upsertTemplateFolder.ParentFolderId == "#")
                 {
                     Helper.CreateTemplateFolder(Convert.ToInt32(upsertTemplateFolder.CompanyId), Convert.ToInt32(upsertTemplateFolder.TeamId), null, upsertTemplateFolder.FolderName);
                 }
@@ -98,7 +100,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     Helper.DeleteTemplate(Convert.ToInt32(id));
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 return Json("false");
             }
@@ -123,7 +125,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             return Json(duplicateTemplate.Id);
         }
 
-        [HttpGet()]
+        /*[HttpGet()]
         public object GetFolders(int? id, string companyId, string teamId)
         {
             List<JsTreeAttribute> core = new List<JsTreeAttribute>();
@@ -197,8 +199,74 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     core.Add(Fileobj);
                 }
             }
+            
+            return Json<List<JsTreeAttribute>>(core);
+        }*/
+
+        [HttpGet()]
+        public object GetFolders(int? id, string companyId, string teamId)
+        {
+            List<JsTreeAttribute> core = new List<JsTreeAttribute>();
+
+            if (id == null)
+            {
+                var demoFolder = Helper.GetDemoFolder();
+
+                JsTreeAttribute obj = new JsTreeAttribute()
+                {
+                    id = "F" + demoFolder.FolderId,
+                    text = demoFolder.FolderName,
+                    //children = true,
+                    parent = "#",
+                    type = "Folder",
+                    IsDemo = true,
+                    title = $"For Demo Purpose Only."
+                };
+
+                core.Add(obj);
+                core = GetTemplateFiles(Convert.ToInt32(demoFolder.FolderId), core);
+
+            }
+
+            var templateFolders = Helper.GetTemplateFolderByCompanyId(Convert.ToInt32(companyId), Convert.ToInt32(teamId));
+            foreach (var templateFolder in templateFolders)
+            {
+
+                JsTreeAttribute obj = new JsTreeAttribute()
+                {
+                    id = "F" + templateFolder.FolderId,
+                    text = templateFolder.FolderName,
+                    //children = true,
+                    parent = String.IsNullOrEmpty(templateFolder.ParentFolderId) ? "#" : "F" + templateFolder.ParentFolderId,
+                    type = "Folder"
+                };
+                core.Add(obj);
+                core = GetTemplateFiles(Convert.ToInt32(templateFolder.FolderId), core);
+            }
 
             return Json<List<JsTreeAttribute>>(core);
+        }
+
+        public List<JsTreeAttribute> GetTemplateFiles(int FolderId, List<JsTreeAttribute> FilesList)
+        {
+            var FileInFolder = Helper.GetTemplateByFolderId(FolderId);
+            //List<JsTreeAttribute> FilesList = new List<JsTreeAttribute>();
+            foreach (var File in FileInFolder)
+            {
+                JsTreeAttribute Fileobj = new JsTreeAttribute()
+                {
+                    id = "T" + Convert.ToString(File.TemplateId),
+                    text = File.TemplateName,
+                    icon = "jstree-file",
+                    //children = false,
+                    parent = "F" + FolderId,
+                    type = "File",
+                    IsDemo = File.IsDemoTemplate,
+                    title = $"{File.Description} ( {File.PdfCount} PDF Forms )"
+                };
+                FilesList.Add(Fileobj);
+            }
+            return FilesList;
         }
     }
 }
