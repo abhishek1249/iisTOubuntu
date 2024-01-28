@@ -106,6 +106,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             var dtMappedPdfFields = new DataTable();
             try
             {
+                var httpContext = HttpContext.Current;
                 CreateMappedPdfTable(dtMappedPdfFields);
                 var drMapped = dtMappedPdfFields.NewRow();
                 drMapped["PDFFieldName"] = "test";
@@ -151,7 +152,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                     FileNamePart = pdfTemplate.FileNamePart,
                     ExcelVersion = pdfTemplate.ExcelVersion
                 };
-                Helper.CreateTemplate(pdfTemplateSet);
+                Helper.CreateTemplate(pdfTemplateSet, Convert.ToInt32(httpContext.Request["CreatedBy"]));
             }
             catch (Exception ex)
             {
@@ -303,7 +304,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
                 pdfTemplateSet.TemplateFileZip = templateMemoryStream.ToArray();
                 pdfTemplateSet.ExcelZip = excelMemoryStream.ToArray();
 
-                response.TemplateId = Helper.CreateTemplate(pdfTemplateSet);
+                response.TemplateId = Helper.CreateTemplate(pdfTemplateSet, Convert.ToInt32(httpContext.Request["CreatedBy"]));
             }
             catch (Exception ex)
             {

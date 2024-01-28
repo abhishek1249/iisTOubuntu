@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Text.Json.Serialization;
 
 namespace ExFormOfficeAddInBAL
@@ -294,12 +295,15 @@ namespace ExFormOfficeAddInBAL
             return lstTemplate;
         }
 
-        public static int CreateTemplate(PdfTemplate pdfTemplate)
+        public static int CreateTemplate(PdfTemplate pdfTemplate, int userId)
         {
             MySqlConnector mySqlConnector = new MySqlConnector();
             var templateId = -1;
+            var createdByuser = userId + "_" + Guid.NewGuid().ToString();
             try
             {
+                Populate_udt_TemplateFile(pdfTemplate.TemplateFile, createdByuser);
+                Populate_udt_Populate_udt_TemplateFile(pdfTemplate.TemplateFileFieldMapping, createdByuser);
                 using (var conn = mySqlConnector.GetConnection())
                 {
                     using (var sqlCmd = new MySqlCommand("usp_CreateTemplateSet", conn))
@@ -323,13 +327,14 @@ namespace ExFormOfficeAddInBAL
                         sqlCmd.Parameters.AddWithValue("p_IsDemoTemplate", pdfTemplate.IsDemoTemplate);
                         sqlCmd.Parameters.AddWithValue("p_ExcelBytes", pdfTemplate.ExcelBytes);
                         sqlCmd.Parameters.AddWithValue("p_FileExtension", pdfTemplate.FileExtension);
+                        sqlCmd.Parameters.AddWithValue("p_createdByuser", createdByuser);
 
-                       
-                        sqlCmd.Parameters.Add("p_TemplateFile", MySqlDbType.JSON);
-                        sqlCmd.Parameters["p_TemplateFile"].Value = JsonConvert.SerializeObject(pdfTemplate.TemplateFile);
 
-                        sqlCmd.Parameters.Add("p_TemplateFileFieldMapping", MySqlDbType.JSON);
-                        sqlCmd.Parameters["p_TemplateFileFieldMapping"].Value = JsonConvert.SerializeObject(pdfTemplate.TemplateFileFieldMapping);
+                        //sqlCmd.Parameters.Add("p_TemplateFile", MySqlDbType.JSON);
+                        //sqlCmd.Parameters["p_TemplateFile"].Value = JsonConvert.SerializeObject(pdfTemplate.TemplateFile);
+
+                        //sqlCmd.Parameters.Add("p_TemplateFileFieldMapping", MySqlDbType.JSON);
+                        //sqlCmd.Parameters["p_TemplateFileFieldMapping"].Value = JsonConvert.SerializeObject(pdfTemplate.TemplateFileFieldMapping);
 
                         sqlCmd.Parameters.Add("p_TemplateId", MySqlDbType.Int32);
                         sqlCmd.Parameters["p_TemplateId"].Direction = ParameterDirection.Output;
@@ -1733,5 +1738,122 @@ namespace ExFormOfficeAddInBAL
             return dt;
 
         }
+
+        #region private methods
+        private static void Populate_udt_TemplateFile(DataTable sourceTable, string createdByuser)
+        {
+            MySqlConnector mySqlConnector = new MySqlConnector();
+            try
+            {
+                foreach (DataRow row in sourceTable.Rows)
+                {
+                    using (var conn = mySqlConnector.GetConnection())
+                    {
+                        using (var sqlComm = new MySqlCommand("usp_Populate_udtTemplateFIle", conn))
+                        {
+                            if (String.IsNullOrEmpty(row["TemplateFileId"].ToString())){
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileId", DBNull.Value);
+                            }
+                            else
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileId", Convert.ToInt32(row["TemplateFileId"]));
+                            }
+
+                            if (String.IsNullOrEmpty(row["TemplateId"].ToString()))
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateId", DBNull.Value);
+                            }
+                            else
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateId", Convert.ToInt32(row["TemplateId"]));
+                            }
+
+                            sqlComm.Parameters.AddWithValue($"p_TemplateId", row["TemplateId"]);
+                            sqlComm.Parameters.AddWithValue($"p_FileName", row["FileName"]);
+                            sqlComm.Parameters.AddWithValue($"p_FileDisplayName", row["FileDisplayName"]);
+                            sqlComm.Parameters.AddWithValue($"p_FilePath", row["FilePath"]);
+                            sqlComm.Parameters.AddWithValue($"p_createByUser", createdByuser);
+
+                            sqlComm.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            
+            
+        }
+
+        private static void Populate_udt_Populate_udt_TemplateFile(DataTable sourceTable, string createdByuser)
+        {
+            MySqlConnector mySqlConnector = new MySqlConnector(); 
+            try
+            {
+                foreach (DataRow row in sourceTable.Rows)
+                {
+                    using (var conn = mySqlConnector.GetConnection())
+                    {
+                        using (var sqlComm = new MySqlCommand("usp_Populate_udt_templatefilefieldmapping", conn))
+                        {
+
+                            if (String.IsNullOrEmpty(row["TemplateFileMappingId"].ToString()))
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileMappingId", DBNull.Value);
+                            }
+                            else
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileMappingId", Convert.ToInt32(row["TemplateFileMappingId"]));
+                            }
+
+                            if (String.IsNullOrEmpty(row["TemplateId"].ToString()))
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateId", DBNull.Value);
+                            }
+                            else
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateId", Convert.ToInt32(row["TemplateId"]));
+                            }
+
+                            if (String.IsNullOrEmpty(row["TemplateFileId"].ToString()))
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileId", DBNull.Value);
+                            }
+                            else
+                            {
+                                sqlComm.Parameters.AddWithValue($"p_TemplateFileId", Convert.ToInt32(row["TemplateFileId"]));
+                            }
+
+                            sqlComm.Parameters.AddWithValue("p_TemplateFileMappingId", row["TemplateFileMappingId"]);
+                            sqlComm.Parameters.AddWithValue("p_TemplateId", row["TemplateId"]);
+                            sqlComm.Parameters.AddWithValue("p_TemplateFileId", row["TemplateFileId"]);
+                            sqlComm.Parameters.AddWithValue("p_PDFFieldName", row["PDFFieldName"]);
+                            sqlComm.Parameters.AddWithValue("p_FilePath", row["FilePath"]);
+                            sqlComm.Parameters.AddWithValue("p_IsMapped", row["IsMapped"]);
+                            sqlComm.Parameters.AddWithValue("p_SheetName", row["SheetName"]);
+                            sqlComm.Parameters.AddWithValue("p_ExcelTableName", row["ExcelTableName"]);
+                            sqlComm.Parameters.AddWithValue("p_FieldId", row["FieldId"]);
+                            sqlComm.Parameters.AddWithValue("p_ParentFieldId", row["ParentFieldId"]);
+                            sqlComm.Parameters.AddWithValue("p_IsDynamic", row["IsDynamic"]);
+                            sqlComm.Parameters.AddWithValue("p_HasChildFields", row["HasChildFields"]);
+                            sqlComm.Parameters.AddWithValue("p_XPath", row["XPath"]);
+                            sqlComm.Parameters.AddWithValue("p_createByUser", createdByuser);
+
+                            sqlComm.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
+
+        }
+        #endregion
+
     }
 }
