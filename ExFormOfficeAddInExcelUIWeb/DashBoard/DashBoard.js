@@ -73,7 +73,7 @@ var treeData = [{}];
             //$("#btnUpdateVersion").click(UpdateExcelVersion);
             $("#btnEditSet").click(EditSet);
             $("#btnTableRelationship").click(GetTableParentChildTables);
-            $("#btnSaveExistingSet").click(SaveExistingSet);
+            $("#btnSaveExistingSet").click(UpdateExcelVersion);
             $("#btnNamingOptions").click(EditDefaults);
             $("#btnRemoveMappings").click(RemoveAllMappings);
             $("#btnRemoveFileMapping").click(confirmRemoveFileMappings);
@@ -737,7 +737,12 @@ var treeData = [{}];
                         //table_body += "<a class='fileAutoMap' id='-1'><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
                         //table_body += '</td>';
                         table_body += '<td>';
-                        table_body += "<a class='fileRemoveMap' id='-1'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+                        if (IsUser()) {
+                            table_body += "<span style='color: red;'> Remove Map </span>";
+                        }
+                        else {
+                            table_body += "<a class='fileRemoveMap' id='-1'><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+                        }
                         table_body += '</td>';
 
                         table_body += '<td>';
@@ -748,10 +753,20 @@ var treeData = [{}];
                         table_body += '</td>';
 
                         table_body += '<td>';
-                        table_body += "<a class='fileEdit' id='-1'><span style='color: red;cursor:pointer;'> Edit </span></a>";
+                        if (IsUser()) {
+                            table_body += "<span style='color: red;'> Edit </span>";
+                        }
+                        else {
+                            table_body += "<a class='fileEdit' id='-1'><span style='color: red;cursor:pointer;'> Edit </span></a>";
+                        }                        
                         table_body += '</td>';
                         table_body += '<td>';
-                        table_body += "<a class='fileDel' id='-1'><span style='color: red;cursor:pointer;'> Delete </span></a>";
+                        if (IsUser()) {
+                            table_body += "<span style='color: red;'> Delete </span>";
+                        }
+                        else {
+                            table_body += "<a class='fileDel' id='-1'><span style='color: red;cursor:pointer;'> Delete </span></a>";
+                        }                        
                         table_body += '</td>';
                         table_body += '<td style="display: none;">';
                         table_body += "false";
@@ -1953,13 +1968,13 @@ var treeData = [{}];
         //debugger;
 
         var fileId = 0;
-        if (currentTemplateFileId != -1) {
+        //if (currentTemplateFileId != -1) {
 
-            if (arrFileMap.indexOf(currentTemplateFileId) < 0) {
-                arrFileMap.push(currentTemplateFileId);
-            }
-            fileId = currentTemplateFileId;
-        }
+        //    if (arrFileMap.indexOf(currentTemplateFileId) < 0) {
+        //        arrFileMap.push(currentTemplateFileId);
+        //    }
+        //    fileId = currentTemplateFileId;
+        //}
 
         if (templateId > 0) {
 
@@ -1982,11 +1997,11 @@ var treeData = [{}];
                     var parentTableColumnNames = [];
                     parentTableColumnNames.push("ID");
 
-                    if (arrFileMap.length > 0) {
-                        res = res.filter(function (item) {
-                            return arrFileMap.indexOf(item.TemplateFileId) > -1;
-                        });
-                    }
+                    //if (arrFileMap.length > 0) {
+                    //    res = res.filter(function (item) {
+                    //        return arrFileMap.indexOf(item.TemplateFileId) > -1;
+                    //    });
+                    //}
 
                     $.each(res, function (index, obj) {
 
@@ -2223,7 +2238,7 @@ var treeData = [{}];
             }).done(function (res) {
                 if (res.IsAnyFieldMapped) {
                     isFileMappingEdited = true;
-                    //SyncMappedFields();
+                    EditSet();
                     app.showNotification('Message', 'All Mappings are removed for the file.');
                 } else if (!res.IsAnyFieldMapped) {
                     app.showNotification('Message', 'There is no field mapped for the file.');
@@ -3062,8 +3077,8 @@ var treeData = [{}];
         });
     }
 
-    function SaveExistingSet() {
-        console.log('Save');
+    function SaveExistingSet(docdata, excelVersion) {
+        
         var delFiles = deletedFiles.join(',');
         var templateName = $.trim($('#txtExistingSetName').val());
         var description = $.trim($('#txtSetDescription').val());
@@ -3111,12 +3126,19 @@ var treeData = [{}];
                 processData: false,
                 data: formData
             }).done(function (res) {
-                console.log(res);
+                
                 if (res === "success" || res === "success with warning") {
                     localStorage.setItem("isTemplateSetEdited", true);
                     deletedFiles = [];
                     $("#newFiles").val('');
                     EditSet();
+                    
+                    if (docdata && excelVersion) {
+                        if (docdata.length > 0) {
+                            excelVersion.fileBytes = docdata;
+                            updateExcelVersionDB(excelVersion);
+                        }
+                    }
                     if (res === "success with warning") { app.showNotification('Error', 'Dynamic templates are not allowed'); }
                 }
                 else {
@@ -3134,7 +3156,7 @@ var treeData = [{}];
         else
             app.showNotification('Error', "Fields cannot be empty.");
 
-        UpdateExcelVersion();
+        //UpdateExcelVersion();
     }
 
     function DeleteTemplateFile() {
@@ -3181,7 +3203,13 @@ var treeData = [{}];
             //table_body += "<a class='fileAutoMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Auto Map </span></a>";
             //table_body += '</td>';
             table_body += '<td>';
-            table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+            if (IsUser()) {
+                table_body += "<span style='color: red;'> Remove Map </span>";
+            }
+            else {
+                table_body += "<a class='fileRemoveMap' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Remove Map </span></a>";
+            }
+            
             table_body += '</td>';
             table_body += '<td>';
             table_body += " " + data.Files[i].FileName;
@@ -3190,10 +3218,20 @@ var treeData = [{}];
             table_body += " " + data.Files[i].MappedPercentage;
             table_body += '</td>';
             table_body += '<td>';
-            table_body += "<a class='fileEdit' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Edit </span></a>";
+            if (IsUser()) {
+                table_body += "<span style='color: red;'> Edit </span>";
+            }
+            else {
+                table_body += "<a class='fileEdit' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Edit </span></a>";
+            }
             table_body += '</td>';
             table_body += '<td>';
-            table_body += "<a class='fileDel' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Delete </span></a>";
+            if (IsUser()) {
+                table_body += "<span style='color: red;'> Delete </span>";
+            }
+            else {
+                table_body += "<a class='fileDel' id=" + data.Files[i].TemplateFileId + "><span style='color: red;cursor:pointer;'> Delete </span></a>";
+            }
             table_body += '</td>';
             table_body += '<td style="display: none;">';
             table_body += data.Files[i].IsXFA;
@@ -3220,6 +3258,14 @@ var treeData = [{}];
     function IsSuperAdmin() {
         var UType = localStorage.getItem("UserType");
         if (UType.toUpperCase() === "S") {
+            return true;
+        }
+        return false;
+    }
+
+    function IsUser() {
+        var UType = localStorage.getItem("UserType");
+        if (UType.toUpperCase() === "U") {
             return true;
         }
         return false;
@@ -3452,34 +3498,33 @@ var treeData = [{}];
         for (var i = 0; i < docdataSlices.length; i++) {
             docdata = docdata.concat(docdataSlices[i]);
         }
-
-        if (docdata.length > 0) {
-            excelVersion.fileBytes = docdata;
-            $.ajax({
-                type: "post",
-                url: "/api/Template/UpdateExcelVersion",
-                data: JSON.stringify(excelVersion),
-                contentType: 'application/json;charset=utf-8'
-            }).done(function (res) {
-                if (res === "success") {
-                    isExcelVersionUpdated = true;
-                    isExcelVersioMatching = true;
-                } else {
-                    isExcelVersionUpdated = false;
-                    isExcelVersioMatching = false;
-                    app.showNotification('Error', 'Could not communicate with the server.');
-                }
-            }).fail(function (status) {
-                app.showNotification('Error', 'Could not communicate with the server.');
-            }).always(function () {
-                //setTimeout(function () {
-                //    $('#btnUpdateVersion').show();
-                //    $('#btnUpdatingVersion').hide();
-                //}, 250);
-            });
-        }
+        
+        SaveExistingSet(docdata, excelVersion);        
     }
-
+    function updateExcelVersionDB(excelVersion) {
+        $.ajax({
+            type: "post",
+            url: "/api/Template/UpdateExcelVersion",
+            data: JSON.stringify(excelVersion),
+            contentType: 'application/json;charset=utf-8'
+        }).done(function (res) {
+            if (res === "success") {
+                isExcelVersionUpdated = true;
+                isExcelVersioMatching = true;
+            } else {
+                isExcelVersionUpdated = false;
+                isExcelVersioMatching = false;
+                app.showNotification('Error', 'Could not communicate with the server.');
+            }
+        }).fail(function (status) {
+            app.showNotification('Error', 'Could not communicate with the server.');
+        }).always(function () {
+            //setTimeout(function () {
+            //    $('#btnUpdateVersion').show();
+            //    $('#btnUpdatingVersion').hide();
+            //}, 250);
+        });
+    }
     function onGotAllSlices(docdataSlices, formData) {
         docdata = [];
         for (var i = 0; i < docdataSlices.length; i++) {
@@ -3510,7 +3555,13 @@ var treeData = [{}];
                             $('#files').val('');
                             pdffiles = [];
                             localStorage.setItem("isSaved", true);
-                            window.location.href = '../DashBoard/DashBoard.html';
+                            //window.location.href = '../DashBoard/DashBoard.html';
+
+                            GetTreeData(teamId);
+                            $('#newSet').hide();
+                            $('#templateSets').show();
+                            $("#accordion").accordion({ active: 0 });
+                            
                         } else {
                             app.showNotification('Error', res);
                         }
