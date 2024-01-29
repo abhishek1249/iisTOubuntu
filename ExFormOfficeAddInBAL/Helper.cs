@@ -2020,7 +2020,7 @@ namespace ExFormOfficeAddInBAL
             {
                 using (var conn = mySqlConnector.GetConnection())
                 {
-                    using (var sqlComm = new MySqlCommand("usp_Delete_udtTemplateFIle", conn))
+                    using (var sqlComm = new MySqlCommand("usp_Delete_udtTemplateFIleOffice", conn))
                     {
                         sqlComm.CommandType = CommandType.StoredProcedure;
                         sqlComm.Parameters.AddWithValue($"p_createdByUser", createdByuser);
