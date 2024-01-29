@@ -2218,9 +2218,10 @@ var treeData = [{}];
 
     function RemoveFileMapping() {
 
+        var isFromGrid = false;
         if (currentRemoveFileId != -1) {
             editFileId = currentRemoveFileId;
-
+            isFromGrid = true;
             const index = arrFileMap.indexOf(currentRemoveFileId);
             arrFileMap.splice(index, 1);
             currentRemoveFileId = -1;
@@ -2238,7 +2239,9 @@ var treeData = [{}];
             }).done(function (res) {
                 if (res.IsAnyFieldMapped) {
                     isFileMappingEdited = true;
-                    EditSet();
+                    if (isFromGrid) {
+                        EditSet();
+                    }
                     app.showNotification('Message', 'All Mappings are removed for the file.');
                 } else if (!res.IsAnyFieldMapped) {
                     app.showNotification('Message', 'There is no field mapped for the file.');
