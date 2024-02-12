@@ -468,7 +468,7 @@ var treeData = [{}];
                 $('#data').jstree("open_all");
             });
 
-            $('#data').on('rename_node.jstree', function (e, data) {
+            $('#data').on('rename_node.jstree', function (e, data) {                
                 if (data.node.original.IsDemo && data.node.type === "Folder") {
                     e.preventDefault();
                     return;
@@ -487,14 +487,14 @@ var treeData = [{}];
                         CompanyId: localStorage.getItem("CompanyID"),
                         TeamId: teamId
                     };
-                    console.log(upsertTemplateFolder);
+                   
                     $.ajax({
                         url: "/api/TreeNode/UpsertTemplateFolder",
                         type: 'post',
                         data: JSON.stringify(upsertTemplateFolder),
                         contentType: 'application/json;charset=utf-8'
                     }).done(function (data) {
-                        console.log(ParentId);
+                        
                         if (ParentId === "#") {
                             GetTreeData(teamId);
                             //$("#data").jstree(true).refresh();
@@ -562,7 +562,7 @@ var treeData = [{}];
                 }, 250);
             });
 
-            $('#data').on('changed.jstree', function (e, data) {
+            $('#data').on('changed.jstree', function (e, data) {               
                 if (data.node !== undefined) {
                     if (data.node.id.indexOf('T') !== -1) {
                         templateId = data.node.id.replace('T', '');
@@ -786,6 +786,7 @@ var treeData = [{}];
                 });
             });
 
+            
             var worksheet;
             Office.context.document.addHandlerAsync(Office.EventType.DocumentSelectionChanged, function () {
                 Excel.run(function (context) {
@@ -1283,7 +1284,7 @@ var treeData = [{}];
                 if (res) {
                     if (res.length == 1) {
                         teamId = res[0].Value;
-                        //console.log(teamId, res[0].Key);
+                        
                         $("#dd_team").append($("<option selected></option>").val(res[0].Value).html(res[0].Key));
                         $("#divTeam").hide();
                         GetTreeData($("#dd_team").val());
@@ -2242,6 +2243,9 @@ var treeData = [{}];
                     if (isFromGrid) {
                         EditSet();
                     }
+                    else {
+                        $("#editdata").jstree().refresh();
+                    }
                     app.showNotification('Message', 'All Mappings are removed for the file.');
                 } else if (!res.IsAnyFieldMapped) {
                     app.showNotification('Message', 'There is no field mapped for the file.');
@@ -2467,7 +2471,7 @@ var treeData = [{}];
 
             var fileId = parseInt(obj.id);
             editFileId = fileId;
-            console.log(editFileId);
+            
             if ($(obj).parent().next()[0].innerText === "true") {
                 isXfa = true;
                 if ($(obj).parent().next().next()[0].innerText === "0") {
@@ -3586,7 +3590,7 @@ var treeData = [{}];
     }
 
     function UpdateExcelVersion() {
-        console.log('Update');
+        
         //$('#btnUpdateVersion').hide();
         //$('#btnUpdatingVersion').show();
         var userId = parseInt(localStorage.getItem("UserID"));

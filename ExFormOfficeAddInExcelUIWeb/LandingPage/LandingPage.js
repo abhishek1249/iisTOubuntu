@@ -1118,6 +1118,8 @@ var teamId = "0";
                     if (err) { return; }
                 });
             });
+            
+            console.log(Office.context);
 
             var worksheet;
             Office.context.document.addHandlerAsync(Office.EventType.DocumentSelectionChanged, function () {
@@ -2270,9 +2272,10 @@ var teamId = "0";
 
     function RemoveFileMapping() {
 
+        var isFromGrid = false;
         if (currentRemoveFileId != -1) {
             editFileId = currentRemoveFileId;
-
+            isFromGrid = true;
             const index = arrFileMap.indexOf(currentRemoveFileId);
             arrFileMap.splice(index, 1);
             currentRemoveFileId = -1;
@@ -2290,7 +2293,12 @@ var teamId = "0";
             }).done(function (res) {
                 if (res.IsAnyFieldMapped) {
                     isFileMappingEdited = true;
-                    //SyncMappedFields();
+                    if (isFromGrid) {
+                        EditSet();
+                    }
+                    else {
+                        $("#editdata").jstree().refresh();
+                    }
                     app.showNotification('Message', 'All Mappings are removed for the file.');
                 } else if (!res.IsAnyFieldMapped) {
                     app.showNotification('Message', 'There is no field mapped for the file.');

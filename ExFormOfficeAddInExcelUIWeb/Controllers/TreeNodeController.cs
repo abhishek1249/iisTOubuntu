@@ -30,25 +30,7 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             public bool IsDemo;
         }
 
-        /*[HttpPost]
-        public JsonResult GetTreeData()
-        {
-            //var list = new List();
-
-            //var lstJsTree = BuildMYTree(list);
-            //return Json(lstJsTree);
-
-            JsTreeModel rootNode = new JsTreeModel();
-            rootNode.attr = new JsTreeAttribute();
-            rootNode.data = "Root";
-            string rootPath = Request.MapPath(dataPath);
-            rootNode.attr.id = rootPath;
-            PopulateTree(rootPath, rootNode);
-            AlreadyPopulated = true;
-            return Json(rootNode);
-
-        }*/
-
+        
         [Route("api/TreeNode/UpsertTemplateFolder")]
         [HttpPost()]
         public object UpsertTemplateFolder(UpsertTemplateFolderParam upsertTemplateFolder)
@@ -57,7 +39,15 @@ namespace ExFormOfficeAddInExcelUIWeb.Controllers
             {
                 if (upsertTemplateFolder.ParentFolderId == "#")
                 {
-                    Helper.CreateTemplateFolder(Convert.ToInt32(upsertTemplateFolder.CompanyId), Convert.ToInt32(upsertTemplateFolder.TeamId), null, upsertTemplateFolder.FolderName);
+                    if (upsertTemplateFolder.FolderId.Contains("j1_1"))
+                    {
+                        Helper.CreateTemplateFolder(Convert.ToInt32(upsertTemplateFolder.CompanyId), Convert.ToInt32(upsertTemplateFolder.TeamId), null, upsertTemplateFolder.FolderName);
+                    }
+                    else
+                    {
+                        var folderId = upsertTemplateFolder.FolderId.Replace("F", "");
+                        Helper.RenameFolder(Convert.ToInt32(folderId), upsertTemplateFolder.FolderName);
+                    }
                 }
                 else if (upsertTemplateFolder.Type == "Folder")
                 {
